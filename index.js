@@ -76,6 +76,10 @@
 
     uiPromise.done(function() {
         Ui.render();
+
+        $(".loading").addClass("hidden");
+        $("#canvas").removeClass("hidden");
+        $(".container-controls").removeClass("hidden");
     });
 
     Ui.setMode(Ui.MODE_MOVE);

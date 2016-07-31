@@ -54,9 +54,6 @@
         }
 
         $.when.apply($, imagePromises).done(function() {
-            canvas.removeClass("hidden");
-            $(".loading").addClass("hidden");
-
             future.resolve();
         });
 
