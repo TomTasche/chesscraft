@@ -1,39 +1,53 @@
-var Field = function(type) {
-    var occupant;
+(function() {
+    var ASSETS = {};
 
-    function getOccupant() {
-        return occupant;
-    }
+    var clazz = function(type) {
+        var occupant;
 
-    function setOccupant(character) {
-        occupant = character;
-    }
-
-    function getType() {
-        return type;
-    }
-
-    function setType(typeParameter) {
-        type = typeParameter;
-    }
-
-    function toString() {
-        if (occupant) {
-            return occupant.toString();
-        } else {
-            return "empty " + type;
+        function getOccupant() {
+            return occupant;
         }
-    }
 
-    var bridge = {};
+        function setOccupant(character) {
+            occupant = character;
+        }
 
-    bridge.getOccupant = getOccupant;
-    bridge.setOccupant = setOccupant;
-    bridge.getType = getType;
-    bridge.setType = setType;
-    bridge.toString = toString;
+        function getType() {
+            return type;
+        }
 
-    return bridge;
-};
-Field.TYPE_PATH = "path";
-Field.TYPE_WALL = "wall";
+        function setType(typeParameter) {
+            type = typeParameter;
+        }
+
+        function getAsset() {
+          return ASSETS[type];
+        }
+
+        function toString() {
+            if (occupant) {
+                return occupant.toString();
+            } else {
+                return "empty " + type;
+            }
+        }
+
+        var bridge = {};
+
+        bridge.getOccupant = getOccupant;
+        bridge.setOccupant = setOccupant;
+        bridge.getType = getType;
+        bridge.setType = setType;
+        bridge.getAsset = getAsset;
+        bridge.toString = toString;
+
+        return bridge;
+    };
+    clazz.TYPE_PATH = "path";
+    clazz.TYPE_WALL = "wall";
+
+    ASSETS[clazz.TYPE_PATH] = "grass_RANDOM.png";
+    ASSETS[clazz.TYPE_WALL] = "wall.png";
+
+    window.Field = clazz;
+})();

@@ -1,8 +1,8 @@
 Game.initialize(10);
-Ui.initialize();
+var uiPromise = Ui.initialize();
 
-Game.addCharacter(0, Character.TYPE_ROOK, 0, 1);
-Game.addCharacter(1, Character.TYPE_BISHOP, 4, 3);
+Game.addCharacter(1, Character.TYPE_ROOK, 0, 1);
+Game.addCharacter(2, Character.TYPE_BISHOP, 4, 3);
 
 Game.addWall(1, 2);
 
@@ -14,4 +14,6 @@ Game.moveCharacter(bishopCharacter, 1, 0);
 
 Game.moveCharacter(rookCharacter, 1, 2);
 
-Ui.render();
+uiPromise.done(function() {
+    Ui.render();
+});

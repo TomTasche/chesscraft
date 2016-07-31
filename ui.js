@@ -1,55 +1,70 @@
 (function() {
     var FIELD_SIZE = 50;
     var SEPARATOR_WIDTH = 0.5;
-    var CHARACTER_SIZE = 30;
+    var SELECTOR_WIDTH = 3;
+    var CHARACTER_SIZE = FIELD_SIZE;
 
     var canvas;
-
-    var symbols;
-    var imageCache;
+    var images;
 
     var selectedCharacter;
 
     function initialize() {
+        var future = $.Deferred();
+
         canvas = $("#canvas");
+        images = {};
 
-        symbols = {};
+        var assets = [];
 
-        symbols[Character.TYPE_KING] = "\u265A";
-        symbols[Character.TYPE_QUEEN] = "\u265B";
-        symbols[Character.TYPE_ROOK] = "\u265C";
-        symbols[Character.TYPE_BISHOP] = "\u265D";
-        symbols[Character.TYPE_KNIGHT] = "\u265E";
-        symbols[Character.TYPE_PAWN] = "\u265F";
+        assets.push("king_1.png");
+        assets.push("king_2.png");
+        assets.push("queen_1.png");
+        assets.push("queen_2.png");
+        assets.push("rook_1.png");
+        assets.push("rook_2.png");
+        assets.push("bishop_1.png");
+        assets.push("bishop_2.png");
+        assets.push("knight_1.png");
+        assets.push("knight_2.png");
+        assets.push("pawn_1.png");
+        assets.push("pawn_2.png");
 
-        symbols[Field.TYPE_WALL] = "🔥";
+        assets.push("grass_1.png");
+        assets.push("grass_2.png");
+        assets.push("grass_3.png");
+        assets.push("wall.png");
 
-        imageCache = [];
         var imagePromises = [];
-        for (var type in symbols) {
-            var symbol = symbols[type];
+        for (var i = 0; i < assets.length; i++) {
+            var asset = assets[i];
 
-            var img = loadEmojiImage(symbol);
-            if (img) {
-                imageCache.push(img);
-
-                var imagePromise = waitForImage(img);
-                imagePromises.push(imagePromise);
-            }
+            var promise = loadAsset(asset);
+            imagePromises.push(promise);
         }
 
         $.when.apply($, imagePromises).done(function() {
             canvas.removeClass("hidden");
             $(".loading").addClass("hidden");
+
+            future.resolve();
         });
+
+        return future.promise();
     }
 
-    function waitForImage(img) {
+    function loadAsset(asset) {
         var future = $.Deferred();
+
+        var img = new Image();
 
         img.addEventListener("load", function() {
             future.resolve();
         }, false);
+
+        img.src = "img/" + asset;
+
+        images[asset] = img;
 
         return future.promise();
     }
@@ -98,29 +113,19 @@
         render();
     }
 
-    function loadEmojiImage(symbol) {
-        var twemojiHtml = twemoji.parse(symbol);
-        var twemojiUrl = $(twemojiHtml).filter("img").attr("src");
-
-        if (twemojiUrl) {
-            var img = new Image();
-            img.src = twemojiUrl;
-
-            return img;
-        }
-
-        return null;
+    // taken from: http://stackoverflow.com/a/1527820/198996
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function renderSymbol(context, symbol, xDistance, yDistance) {
-        var img = loadEmojiImage(symbol);
-        if (img) {
-            img.addEventListener("load", function() {
-                context.drawImage(img, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
-            }, false);
-        } else {
-            context.fillText(symbol, xDistance, yDistance, CHARACTER_SIZE);
-        }
+    function getImageForAsset(asset, player) {
+        asset = asset.replace("PLAYER", player);
+
+        var random = getRandomInt(1, 3);
+        asset = asset.replace("RANDOM", random);
+
+        var img = images[asset];
+        return img;
     }
 
     function render() {
@@ -134,9 +139,49 @@
         canvas.width = length;
         canvas.height = length;
 
+        var grid = Game.getGrid();
+        var gridSize = Game.getGridSize();
+
+        context.lineWidth = SELECTOR_WIDTH;
+
+        for (var x = 0; x < gridSize; x++) {
+            for (var y = 0; y < gridSize; y++) {
+                var yDistance = calculateGridDistance(x);
+                var xDistance = calculateGridDistance(y);
+
+                var field = grid[x][y];
+                var character = field.getOccupant();
+
+                if (field.getType() !== Field.TYPE_PATH) {
+                    // TODO: do not hardcode
+                    var backgroundImage = getImageForAsset("grass_RANDOM.png");
+                    context.drawImage(backgroundImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
+                }
+
+                var fieldAsset = field.getAsset();
+                var fieldImage = getImageForAsset(fieldAsset);
+                context.drawImage(fieldImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
+
+                if (character) {
+                    if (character === selectedCharacter) {
+                        context.strokeStyle = "red";
+
+                        context.strokeRect(xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE)
+                    }
+
+                    context.strokeStyle = "black";
+
+                    var characterAsset = character.getAsset();
+                    var characterImage = getImageForAsset(characterAsset, character.getPlayer());
+
+                    context.drawImage(characterImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
+                }
+            }
+        }
+
+        context.beginPath();
         context.lineWidth = SEPARATOR_WIDTH;
         context.strokeStyle = "black";
-        context.beginPath();
 
         for (var i = 0; i <= Game.getGridSize(); i++) {
             var distance = calculateGridDistance(i);
@@ -149,41 +194,6 @@
         }
 
         context.stroke();
-
-        context.lineWidth = 1;
-        context.font = CHARACTER_SIZE + "px serif";
-        context.textBaseline = "top"
-
-        var grid = Game.getGrid();
-        var gridSize = Game.getGridSize();
-
-        for (var x = 0; x < gridSize; x++) {
-            for (var y = 0; y < gridSize; y++) {
-                var yDistance = calculateCharacterDistance(x);
-                var xDistance = calculateCharacterDistance(y);
-
-                var field = grid[x][y];
-                var character = field.getOccupant();
-
-                context.fillStyle = "#000000";
-
-                var type;
-                if (character) {
-                    if (character === selectedCharacter) {
-                        context.fillStyle = "#ff0000";
-                    }
-
-                    type = character.getType();
-                } else {
-                    type = field.getType();
-                }
-
-                symbol = symbols[type];
-                if (symbol) {
-                    renderSymbol(context, symbol, xDistance, yDistance);
-                }
-            }
-        }
     }
 
     var bridge = {};
