@@ -31,21 +31,6 @@
             return player;
         }
 
-        function isVerticalMove(oldX, oldY, newX, newY) {
-            return newX === oldX && newY !== oldY;
-        }
-
-        function isHorizontalMove(oldX, oldY, newX, newY) {
-            return newX !== oldX && newY === oldY;
-        }
-
-        function isDiagonalMove(oldX, oldY, newX, newY) {
-            var deltaX = Math.abs(x - newX);
-            var deltaY = Math.abs(y - newY);
-
-            return deltaX === deltaY;
-        }
-
         function isMovePossible(newX, newY) {
             if (type === Character.TYPE_KING) {
                 var deltaX = Math.abs(x - newX);
@@ -55,21 +40,21 @@
                     return false;
                 }
             } else if (type === Character.TYPE_QUEEN) {
-                var verticalMove = isVerticalMove(x, y, newX, newY);
-                var horizontalMove = isHorizontalMove(x, y, newX, newY);
-                var diagonalMove = isDiagonalMove(x, y, newX, newY);
+                var verticalMove = Game.isVerticalMove(x, y, newX, newY);
+                var horizontalMove = Game.isHorizontalMove(x, y, newX, newY);
+                var diagonalMove = Game.isDiagonalMove(x, y, newX, newY);
 
                 if (!verticalMove && !horizontalMove && !diagonalMove) {
                     return false;
                 }
             } else if (type === Character.TYPE_ROOK) {
-                var verticalMove = isVerticalMove(x, y, newX, newY);
-                var horizontalMove = isHorizontalMove(x, y, newX, newY);
+                var verticalMove = Game.isVerticalMove(x, y, newX, newY);
+                var horizontalMove = Game.isHorizontalMove(x, y, newX, newY);
                 if (!verticalMove && !horizontalMove) {
                     return false;
                 }
             } else if (type === Character.TYPE_BISHOP) {
-                var diagonalMove = isDiagonalMove(x, y, newX, newY);
+                var diagonalMove = Game.isDiagonalMove(x, y, newX, newY);
                 if (!diagonalMove) {
                     return false;
                 }

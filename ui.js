@@ -4,10 +4,15 @@
     var SELECTOR_WIDTH = 3;
     var CHARACTER_SIZE = FIELD_SIZE;
 
+    var MODE_MOVE = "move";
+    var MODE_WALL = "wall";
+
     var canvas;
     var images;
 
     var selectedCharacter;
+
+    var currentMode;
 
     function initialize() {
         var future = $.Deferred();
@@ -99,15 +104,22 @@
         var x = Math.floor(clickY / (FIELD_SIZE + SEPARATOR_WIDTH));
         var y = Math.floor(clickX / (FIELD_SIZE + SEPARATOR_WIDTH));
 
-        if (selectedCharacter) {
-            Game.moveCharacter(selectedCharacter, x, y);
+        if (currentMode === MODE_MOVE) {
+            if (selectedCharacter) {
+                Game.moveCharacter(selectedCharacter, x, y);
 
-            selectedCharacter = null;
-        } else {
-            var grid = Game.getGrid();
+                selectedCharacter = null;
+            } else {
+                var grid = Game.getGrid();
 
-            var field = grid[x][y];
-            selectedCharacter = field.getOccupant();
+                var field = grid[x][y];
+                selectedCharacter = field.getOccupant();
+            }
+        } else if (currentMode === MODE_WALL) {
+            var character = Game.getCharacter(x, y);
+            if (!character) {
+                Game.addWall(x, y);
+            }
         }
 
         render();
@@ -196,10 +208,18 @@
         context.stroke();
     }
 
+    function setMode(mode) {
+        currentMode = mode;
+    }
+
     var bridge = {};
 
     bridge.initialize = initialize;
     bridge.render = render;
+    bridge.setMode = setMode;
+
+    bridge.MODE_MOVE = MODE_MOVE;
+    bridge.MODE_WALL = MODE_WALL;
 
     window.Ui = bridge;
 })();

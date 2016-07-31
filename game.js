@@ -19,7 +19,7 @@
     }
 
     function getGrid() {
-      return grid;
+        return grid;
     }
 
     function toString() {
@@ -55,10 +55,27 @@
         return grid[x][y].getOccupant();
     }
 
+    function isVerticalMove(oldX, oldY, newX, newY) {
+        return newX === oldX && newY !== oldY;
+    }
+
+    function isHorizontalMove(oldX, oldY, newX, newY) {
+        return newX !== oldX && newY === oldY;
+    }
+
+    function isDiagonalMove(oldX, oldY, newX, newY) {
+        var deltaX = Math.abs(oldX - newX);
+        var deltaY = Math.abs(oldY - newY);
+
+        return deltaX === deltaY;
+    }
+
     function isMovePossible(character, newX, newY) {
         var gridSize = Game.getGridSize();
 
-        if (character.getX() === newX && character.getY() === newY) {
+        var oldX = character.getX();
+        var oldY = character.getY();
+        if (oldX === newX && oldY === newY) {
             return true;
         }
 
@@ -72,7 +89,65 @@
             return false;
         }
 
-        return character.isMovePossible(newX, newY);
+        if (!character.isMovePossible(newX, newY)) {
+            return false;
+        }
+
+        // does not check moves for knights
+        // TODO: cleanup code
+        if (isVerticalMove(oldX, oldY, newX, newY)) {
+            var maxY = Math.max(oldY, newY);
+            var minY = Math.min(oldY, newY);
+
+            var x = oldX;
+            for (var y = minY + 1; y < maxY; y++) {
+                var field = grid[x][y];
+
+                var isOccupied = field.getOccupant();
+                var isBlocked = field.getType() === Field.TYPE_WALL;
+
+                if (isOccupied || isBlocked) {
+                    return false;
+                }
+            }
+        } else if (isHorizontalMove(oldX, oldY, newX, newY)) {
+            var maxX = Math.max(oldX, newX);
+            var minX = Math.min(oldX, newX);
+
+            var y = oldY;
+            for (var x = minX + 1; x < maxX; x++) {
+                var field = grid[x][y];
+
+                var isOccupied = field.getOccupant();
+                var isBlocked = field.getType() === Field.TYPE_WALL;
+
+                if (isOccupied || isBlocked) {
+                    return false;
+                }
+            }
+        } else if (isDiagonalMove(oldX, oldY, newX, newY)) {
+            var maxX = Math.max(oldX, newX);
+            var minX = Math.min(oldX, newX);
+
+            var maxY = Math.max(oldY, newY);
+            var minY = Math.min(oldY, newY);
+
+            var x = minX + 1;
+            for (var y = minY + 1; y < maxY; y++) {
+                var field = grid[x][y];
+
+                var isOccupied = field.getOccupant();
+                var isBlocked = field.getType() === Field.TYPE_WALL;
+
+                if (isOccupied || isBlocked) {
+                    return false;
+                }
+
+                x++;
+            }
+        }
+
+        return true;
     }
 
     function moveCharacter(character, newX, newY) {
@@ -103,6 +178,9 @@
     bridge.addWall = addWall;
     bridge.getCharacter = getCharacter;
     bridge.moveCharacter = moveCharacter;
+    bridge.isVerticalMove = isVerticalMove;
+    bridge.isHorizontalMove = isHorizontalMove;
+    bridge.isDiagonalMove = isDiagonalMove;
     bridge.toString = toString;
 
     window.Game = bridge;
