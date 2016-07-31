@@ -6,6 +6,10 @@
 
     var MODE_MOVE = "move";
     var MODE_WALL = "wall";
+    var MODE_CHARACTER = "character";
+
+    var MODE_DATA_CHARACTER_TYPE = "characterType";
+    var MODE_DATA_PLAYER = "player";
 
     var canvas;
     var images;
@@ -13,6 +17,7 @@
     var selectedCharacter;
 
     var currentMode;
+    var currentModeData;
 
     function initialize() {
         var future = $.Deferred();
@@ -120,6 +125,11 @@
             if (!character) {
                 Game.addWall(x, y);
             }
+        } else if (currentMode === MODE_CHARACTER) {
+            var characterType = currentModeData[MODE_DATA_CHARACTER_TYPE];
+            var player = currentModeData[MODE_DATA_PLAYER];
+
+            Game.addCharacter(player, characterType, x, y);
         }
 
         render();
@@ -208,8 +218,9 @@
         context.stroke();
     }
 
-    function setMode(mode) {
+    function setMode(mode, data) {
         currentMode = mode;
+        currentModeData = data;
     }
 
     var bridge = {};
@@ -220,6 +231,10 @@
 
     bridge.MODE_MOVE = MODE_MOVE;
     bridge.MODE_WALL = MODE_WALL;
+    bridge.MODE_CHARACTER = MODE_CHARACTER;
+
+    bridge.MODE_DATA_CHARACTER_TYPE = MODE_DATA_CHARACTER_TYPE;
+    bridge.MODE_DATA_PLAYER = MODE_DATA_PLAYER;
 
     window.Ui = bridge;
 })();
