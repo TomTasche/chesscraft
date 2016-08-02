@@ -5,7 +5,7 @@
     var CHARACTER_SIZE = FIELD_SIZE;
 
     var MODE_MOVE = "move";
-    var MODE_WALL = "wall";
+    var MODE_WATER = "water";
     var MODE_CHARACTER = "character";
 
     var MODE_DATA_CHARACTER_TYPE = "characterType";
@@ -43,7 +43,7 @@
         assets.push("grass_1.png");
         assets.push("grass_2.png");
         assets.push("grass_3.png");
-        assets.push("wall.png");
+        assets.push("water.png");
 
         var imagePromises = [];
         for (var i = 0; i < assets.length; i++) {
@@ -117,7 +117,7 @@
                 var field = grid[x][y];
                 selectedCharacter = field.getOccupant();
             }
-        } else if (currentMode === MODE_WALL) {
+        } else if (currentMode === MODE_WATER) {
             var character = Game.getCharacter(x, y);
             if (!character) {
                 Game.addWall(x, y);
@@ -227,7 +227,7 @@
     bridge.setMode = setMode;
 
     bridge.MODE_MOVE = MODE_MOVE;
-    bridge.MODE_WALL = MODE_WALL;
+    bridge.MODE_WATER = MODE_WATER;
     bridge.MODE_CHARACTER = MODE_CHARACTER;
 
     bridge.MODE_DATA_CHARACTER_TYPE = MODE_DATA_CHARACTER_TYPE;

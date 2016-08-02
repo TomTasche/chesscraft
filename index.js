@@ -2,7 +2,7 @@
     var isWallMode = false;
     var isCharacterMode = false;
 
-    var wallButton = $(".button-place-walls");
+    var waterButton = $(".button-place-water");
     var characterButton = $(".button-place-character");
 
     var playerSelect = $(".select-player");
@@ -29,12 +29,12 @@
         var mode;
         if (isWallMode) {
             text = "Mauer platzieren beenden.";
-            mode = Ui.MODE_WALL;
+            mode = Ui.MODE_WATER;
         } else {
             text = "Mauer platzieren...";
             mode = Ui.MODE_MOVE;
         }
-        wallButton.text(text);
+        waterButton.text(text);
 
         Ui.setMode(mode);
     }
@@ -85,7 +85,7 @@
     Ui.setMode(Ui.MODE_MOVE);
 
     toggleWallMode();
-    wallButton.click(function() {
+    waterButton.click(function() {
         isWallMode = !isWallMode;
         isCharacterMode = false;
 

@@ -48,7 +48,7 @@
 
     function addWall(x, y) {
         var field = grid[x][y];
-        field.setType(Field.TYPE_WALL);
+        field.setType(Field.TYPE_WATER);
     }
 
     function getCharacter(x, y) {
@@ -104,7 +104,7 @@
                 var field = grid[x][y];
 
                 var isOccupied = field.getOccupant();
-                var isBlocked = field.getType() === Field.TYPE_WALL;
+                var isBlocked = field.getType() === Field.TYPE_WATER;
 
                 if (isOccupied || isBlocked) {
                     return false;
@@ -119,7 +119,7 @@
                 var field = grid[x][y];
 
                 var isOccupied = field.getOccupant();
-                var isBlocked = field.getType() === Field.TYPE_WALL;
+                var isBlocked = field.getType() === Field.TYPE_WATER;
 
                 if (isOccupied || isBlocked) {
                     return false;
@@ -137,7 +137,7 @@
                 var field = grid[x][y];
 
                 var isOccupied = field.getOccupant();
-                var isBlocked = field.getType() === Field.TYPE_WALL;
+                var isBlocked = field.getType() === Field.TYPE_WATER;
 
                 if (isOccupied || isBlocked) {
                     return false;
