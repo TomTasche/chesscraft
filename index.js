@@ -1,12 +1,39 @@
 (function() {
-    var isWallMode = false;
+    var isWaterMode = false;
     var isCharacterMode = false;
 
-    var waterButton = $(".button-place-water");
-    var characterButton = $(".button-place-character");
+    var characterTemplate = $("#character-template");
 
+    var controlsContainer = $(".container-controls");
+    var charactersContainer = $(".container-characters");
+    var fieldsContainer = $(".container-fields");
     var playerSelect = $(".select-player");
-    var characterSelect = $(".select-character");
+
+    function addField(container, type, name) {
+        var characterContainer = $(characterTemplate.html());
+
+        var button = characterContainer.find(".character-button");
+        button.attr("value", type);
+        button.text(name);
+
+        button.click(function() {
+            isWaterMode = !isWaterMode;
+            isCharacterMode = false;
+
+            controlsContainer.find(".character-button").removeClass("character-button-active");
+            button.toggleClass("character-button-active", isWaterMode);
+
+            toggleCharacterMode();
+            toggleWaterMode();
+        });
+
+        var asset = Field.ASSETS[type];
+        var img = Ui.getImageForAsset(asset);
+
+        characterContainer.prepend(img);
+
+        container.append(characterContainer);
+    }
 
     function addPlayer(select, playerNumber) {
         var option = $("<option>");
@@ -16,44 +43,55 @@
         select.append(option);
     }
 
-    function addCharacter(select, type, name) {
-        var option = $("<option>");
-        option.attr("value", type);
-        option.text(name);
+    function addCharacter(container, type, name) {
+        var characterContainer = $(characterTemplate.html());
 
-        select.append(option);
+        var button = characterContainer.find(".character-button");
+        button.attr("value", type);
+        button.text(name);
+
+        button.click(function() {
+            isCharacterMode = !isCharacterMode;
+            isWaterMode = false;
+
+            controlsContainer.find(".character-button").removeClass("character-button-active");
+            button.toggleClass("character-button-active", isCharacterMode);
+
+            toggleWaterMode();
+            toggleCharacterMode(type);
+        });
+
+        var player = playerSelect.val();
+        var asset = Character.ASSETS[type];
+        var img = Ui.getImageForAsset(asset, player);
+
+        characterContainer.prepend(img);
+
+        container.append(characterContainer);
     }
 
-    function toggleWallMode() {
-        var text;
+    function toggleWaterMode() {
         var mode;
-        if (isWallMode) {
-            text = "Mauer platzieren beenden.";
+        if (isWaterMode) {
             mode = Ui.MODE_WATER;
         } else {
-            text = "Mauer platzieren...";
             mode = Ui.MODE_MOVE;
         }
-        waterButton.text(text);
 
         Ui.setMode(mode);
     }
 
-    function toggleCharacterMode() {
-        var text;
+    function toggleCharacterMode(type) {
         var mode;
+        var data = {};
         if (isCharacterMode) {
-            text = "Figur platzieren beenden.";
             mode = Ui.MODE_CHARACTER;
+
+            data[Ui.MODE_DATA_CHARACTER_TYPE] = type;
+            data[Ui.MODE_DATA_PLAYER] = playerSelect.val();
         } else {
-            text = "Figur platzieren...";
             mode = Ui.MODE_MOVE;
         }
-        characterButton.text(text);
-
-        var data = {};
-        data[Ui.MODE_DATA_CHARACTER_TYPE] = characterSelect.val();
-        data[Ui.MODE_DATA_PLAYER] = playerSelect.val();
 
         Ui.setMode(mode, data);
     }
@@ -64,7 +102,7 @@
     Game.addCharacter(1, Character.TYPE_KNIGHT, 0, 1);
     Game.addCharacter(2, Character.TYPE_ARCHER, 4, 3);
 
-    Game.addWall(1, 2);
+    Game.addWater(1, 2);
 
     var character = Game.getCharacter(4, 3);
     Game.moveCharacter(character, 1, 0);
@@ -72,35 +110,19 @@
     uiPromise.done(function() {
         Ui.render();
 
+        Ui.setMode(Ui.MODE_MOVE);
+
+        addPlayer(playerSelect, 1);
+        addPlayer(playerSelect, 2);
+
+        addCharacter(charactersContainer, Character.TYPE_ARCHER, "Bogenschütze");
+        addCharacter(charactersContainer, Character.TYPE_KNIGHT, "Ritter");
+        addCharacter(charactersContainer, Character.TYPE_PAWN, "Bauer");
+
+        addField(fieldsContainer, Field.TYPE_WATER, "Wasser");
+
         $(".loading").addClass("hidden");
         $("#canvas").removeClass("hidden");
         $(".container-controls").removeClass("hidden");
     });
-
-    Ui.setMode(Ui.MODE_MOVE);
-
-    toggleWallMode();
-    waterButton.click(function() {
-        isWallMode = !isWallMode;
-        isCharacterMode = false;
-
-        toggleCharacterMode();
-        toggleWallMode();
-    });
-
-    toggleCharacterMode();
-    characterButton.click(function() {
-        isCharacterMode = !isCharacterMode;
-        isWallMode = false;
-
-        toggleWallMode();
-        toggleCharacterMode();
-    });
-
-    addPlayer(playerSelect, 1);
-    addPlayer(playerSelect, 2);
-
-    addCharacter(characterSelect, Character.TYPE_ARCHER, "Bogenschütze");
-    addCharacter(characterSelect, Character.TYPE_KNIGHT, "Ritter");
-    addCharacter(characterSelect, Character.TYPE_PAWN, "Bauer");
 })();

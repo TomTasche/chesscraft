@@ -5,22 +5,37 @@
     .hidden {
         display: none;
     }
+
+    .container-controls {
+        display: inline-block;
+    }
+
+    .character-button {
+        display: block;
+    }
+
+    .character-button-active {
+        background-color: burlywood;
+    }
 </style>
 
 <div class="loading">Wird geladen...</div>
 <canvas id="canvas" class="hidden"></canvas>
 
-<p class="container-controls hidden">
-    <button class="button-place-water"></button>
+<div class="container-controls hidden">
+    <div class="container-fields"></div>
 
-    <br>
+    <hr>
+    für <select class="select-player"></select>:
 
-    <select class="select-player"></select>
+    <div class="container-characters"></div>
+</div>
 
-    <select class="select-character"></select>
-
-    <button class="button-place-character"></button>
-</p>
+<script type="text/html" id="character-template">
+    <div>
+        <button class="character-button" />
+    </div>
+</script>
 
 <script src="jquery.js"></script>
 

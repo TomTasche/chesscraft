@@ -46,7 +46,7 @@
         grid[x][y].setOccupant(character);
     }
 
-    function addWall(x, y) {
+    function addWater(x, y) {
         var field = grid[x][y];
         field.setType(Field.TYPE_WATER);
     }
@@ -175,7 +175,7 @@
     bridge.getGridSize = getGridSize;
     bridge.getGrid = getGrid;
     bridge.addCharacter = addCharacter;
-    bridge.addWall = addWall;
+    bridge.addWater = addWater;
     bridge.getCharacter = getCharacter;
     bridge.moveCharacter = moveCharacter;
     bridge.isVerticalMove = isVerticalMove;

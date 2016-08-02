@@ -114,7 +114,7 @@
         } else if (currentMode === MODE_WATER) {
             var character = Game.getCharacter(x, y);
             if (!character) {
-                Game.addWall(x, y);
+                Game.addWater(x, y);
             }
         } else if (currentMode === MODE_CHARACTER) {
             var characterType = currentModeData[MODE_DATA_CHARACTER_TYPE];
@@ -171,7 +171,7 @@
                     context.drawImage(backgroundImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
                 }
 
-                var fieldAsset = field.getAsset();
+                var fieldAsset = Field.ASSETS[field.getType()];
                 var fieldImage = getImageForAsset(fieldAsset);
                 context.drawImage(fieldImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
 
@@ -184,7 +184,7 @@
 
                     context.strokeStyle = "black";
 
-                    var characterAsset = character.getAsset();
+                    var characterAsset = Character.ASSETS[character.getType()];
                     var characterImage = getImageForAsset(characterAsset, character.getPlayer());
 
                     context.drawImage(characterImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
@@ -217,6 +217,7 @@
     var bridge = {};
 
     bridge.initialize = initialize;
+    bridge.getImageForAsset = getImageForAsset;
     bridge.render = render;
     bridge.setMode = setMode;
 

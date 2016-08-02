@@ -20,10 +20,6 @@
             type = typeParameter;
         }
 
-        function getAsset() {
-          return ASSETS[type];
-        }
-
         function toString() {
             if (occupant) {
                 return occupant.toString();
@@ -38,7 +34,6 @@
         bridge.setOccupant = setOccupant;
         bridge.getType = getType;
         bridge.setType = setType;
-        bridge.getAsset = getAsset;
         bridge.toString = toString;
 
         return bridge;
@@ -48,6 +43,8 @@
 
     ASSETS[clazz.TYPE_GRASS] = "grass_RANDOM.png";
     ASSETS[clazz.TYPE_WATER] = "water.png";
+
+    clazz.ASSETS = ASSETS;
 
     window.Field = clazz;
 })();

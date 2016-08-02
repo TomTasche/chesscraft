@@ -74,10 +74,6 @@
             return true;
         }
 
-        function getAsset() {
-            return ASSETS[type];
-        }
-
         function toString() {
             return type;
         }
@@ -91,7 +87,6 @@
         bridge.getType = getType;
         bridge.getPlayer = getPlayer;
         bridge.isMovePossible = isMovePossible;
-        bridge.getAsset = getAsset;
         bridge.toString = toString;
 
         return bridge;
@@ -103,6 +98,8 @@
     ASSETS[clazz.TYPE_ARCHER] = "archer_PLAYER.png";
     ASSETS[clazz.TYPE_KNIGHT] = "knight_PLAYER.png";
     ASSETS[clazz.TYPE_PAWN] = "pawn_PLAYER.png";
+
+    clazz.ASSETS = ASSETS;
 
     window.Character = clazz;
 })();
