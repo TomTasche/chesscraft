@@ -32,28 +32,7 @@
         }
 
         function isMovePossible(newX, newY) {
-            if (type === Character.TYPE_KING) {
-                var deltaX = Math.abs(x - newX);
-                var deltaY = Math.abs(y - newY);
-
-                if (deltaX > 1 || deltaY > 1) {
-                    return false;
-                }
-            } else if (type === Character.TYPE_QUEEN) {
-                var verticalMove = Game.isVerticalMove(x, y, newX, newY);
-                var horizontalMove = Game.isHorizontalMove(x, y, newX, newY);
-                var diagonalMove = Game.isDiagonalMove(x, y, newX, newY);
-
-                if (!verticalMove && !horizontalMove && !diagonalMove) {
-                    return false;
-                }
-            } else if (type === Character.TYPE_ROOK) {
-                var verticalMove = Game.isVerticalMove(x, y, newX, newY);
-                var horizontalMove = Game.isHorizontalMove(x, y, newX, newY);
-                if (!verticalMove && !horizontalMove) {
-                    return false;
-                }
-            } else if (type === Character.TYPE_BISHOP) {
+            if (type === Character.TYPE_ARCHER) {
                 var diagonalMove = Game.isDiagonalMove(x, y, newX, newY);
                 if (!diagonalMove) {
                     return false;
@@ -72,9 +51,9 @@
                 var deltaX = x - newX;
                 var deltaY = y - newY;
 
-                var forwardMove = (deltaX === 0 && deltaY === 1);
-                if (!moved) {
-                    forwardMove = (deltaX === 0 && deltaY === 2);
+                var forwardMove = (deltaY === 0 && deltaX === 1);
+                if (!forwardMove && !moved) {
+                    forwardMove = (deltaY === 0 && deltaX === 2);
                 }
 
                 var attackingMove;
@@ -117,17 +96,11 @@
 
         return bridge;
     };
-    clazz.TYPE_KING = "king";
-    clazz.TYPE_QUEEN = "queen";
-    clazz.TYPE_ROOK = "rook";
-    clazz.TYPE_BISHOP = "bishop";
+    clazz.TYPE_ARCHER = "archer";
     clazz.TYPE_KNIGHT = "knight";
     clazz.TYPE_PAWN = "pawn";
 
-    ASSETS[clazz.TYPE_KING] = "king_PLAYER.png";
-    ASSETS[clazz.TYPE_QUEEN] = "queen_PLAYER.png";
-    ASSETS[clazz.TYPE_ROOK] = "rook_PLAYER.png";
-    ASSETS[clazz.TYPE_BISHOP] = "bishop_PLAYER.png";
+    ASSETS[clazz.TYPE_ARCHER] = "archer_PLAYER.png";
     ASSETS[clazz.TYPE_KNIGHT] = "knight_PLAYER.png";
     ASSETS[clazz.TYPE_PAWN] = "pawn_PLAYER.png";
 

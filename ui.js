@@ -27,14 +27,8 @@
 
         var assets = [];
 
-        assets.push("king_1.png");
-        assets.push("king_2.png");
-        assets.push("queen_1.png");
-        assets.push("queen_2.png");
-        assets.push("rook_1.png");
-        assets.push("rook_2.png");
-        assets.push("bishop_1.png");
-        assets.push("bishop_2.png");
+        assets.push("archer_1.png");
+        assets.push("archer_2.png");
         assets.push("knight_1.png");
         assets.push("knight_2.png");
         assets.push("pawn_1.png");
