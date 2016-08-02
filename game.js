@@ -5,7 +5,7 @@
         for (var i = 0; i < gridSize; i++) {
             var row = [];
             for (var j = 0; j < gridSize; j++) {
-                var field = new Field(Field.TYPE_PATH);
+                var field = new Field(Field.TYPE_GRASS);
 
                 row.push(field);
             }
@@ -85,7 +85,7 @@
         }
 
         var field = grid[newX][newY];
-        if (field.getType() !== Field.TYPE_PATH) {
+        if (field.getType() !== Field.TYPE_GRASS) {
             return false;
         }
 

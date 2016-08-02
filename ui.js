@@ -171,7 +171,7 @@
                 var field = grid[x][y];
                 var character = field.getOccupant();
 
-                if (field.getType() !== Field.TYPE_PATH) {
+                if (field.getType() !== Field.TYPE_GRASS) {
                     // TODO: do not hardcode
                     var backgroundImage = getImageForAsset("grass_RANDOM.png");
                     context.drawImage(backgroundImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);

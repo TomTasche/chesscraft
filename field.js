@@ -43,10 +43,10 @@
 
         return bridge;
     };
-    clazz.TYPE_PATH = "path";
+    clazz.TYPE_GRASS = "grass";
     clazz.TYPE_WATER = "water";
 
-    ASSETS[clazz.TYPE_PATH] = "grass_RANDOM.png";
+    ASSETS[clazz.TYPE_GRASS] = "grass_RANDOM.png";
     ASSETS[clazz.TYPE_WATER] = "water.png";
 
     window.Field = clazz;
