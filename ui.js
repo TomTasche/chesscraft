@@ -176,18 +176,29 @@
                 context.drawImage(fieldImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
 
                 if (character) {
-                    if (character === selectedCharacter) {
-                        context.strokeStyle = "red";
-
-                        context.strokeRect(xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE)
-                    }
-
-                    context.strokeStyle = "black";
-
                     var characterAsset = Character.ASSETS[character.getType()];
                     var characterImage = getImageForAsset(characterAsset, character.getPlayer());
 
                     context.drawImage(characterImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
+
+
+                    var color;
+                    if (character === selectedCharacter) {
+                        color = "blue";
+                    } else {
+                        if (character.getPlayer() === 1) {
+                            color = "green";
+                        } else {
+                            color = "red";
+                        }
+                    }
+
+                    context.save();
+                    context.globalAlpha = 0.3;
+                    context.fillStyle = color;
+
+                    context.fillRect(xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
+                    context.restore();
                 }
             }
         }
