@@ -14,7 +14,7 @@
     function addFieldControl(container, type, name) {
         var characterContainer = $(characterTemplate.html());
 
-        var button = characterContainer.find(".character-button");
+        var button = characterContainer.find(".controls-button");
         button.attr("value", type);
         button.text(name);
 
@@ -23,8 +23,8 @@
             isCharacterMode = false;
             isAttackMode = false;
 
-            controlsContainer.find(".character-button").removeClass("character-button-active");
-            button.toggleClass("character-button-active", isWaterMode);
+            controlsContainer.find(".controls-button").removeClass("controls-button-active");
+            button.toggleClass("controls-button-active", isWaterMode);
 
             var mode;
             if (isWaterMode) {
@@ -39,7 +39,10 @@
         var asset = Field.ASSETS[type];
         var img = Ui.getImageForAsset(asset);
 
-        characterContainer.prepend(img);
+        var imageElement = $(img);
+        imageElement.addClass("controls-image");
+
+        characterContainer.prepend(imageElement);
 
         container.append(characterContainer);
     }
@@ -55,7 +58,7 @@
     function addCharacterControl(container, type, name) {
         var characterContainer = $(characterTemplate.html());
 
-        var button = characterContainer.find(".character-button");
+        var button = characterContainer.find(".controls-button");
         button.attr("value", type);
         button.text(name);
 
@@ -64,8 +67,8 @@
             isWaterMode = false;
             isAttackMode = false;
 
-            controlsContainer.find(".character-button").removeClass("character-button-active");
-            button.toggleClass("character-button-active", isCharacterMode);
+            controlsContainer.find(".controls-button").removeClass("controls-button-active");
+            button.toggleClass("controls-button-active", isCharacterMode);
 
             var mode;
             var data = {};
@@ -85,7 +88,10 @@
         var asset = Character.ASSETS[type];
         var img = Ui.getImageForAsset(asset, player);
 
-        characterContainer.prepend(img);
+        var imageElement = $(img);
+        imageElement.addClass("controls-image");
+
+        characterContainer.prepend(imageElement);
 
         container.append(characterContainer);
     }
@@ -120,8 +126,8 @@
             isCharacterMode = false;
             isWaterMode = false;
 
-            controlsContainer.find(".character-button").removeClass("character-button-active");
-            attackButton.toggleClass("character-button-active", isAttackMode);
+            controlsContainer.find(".controls-button").removeClass("controls-button-active");
+            attackButton.toggleClass("controls-button-active", isAttackMode);
 
             var mode;
             if (isAttackMode) {

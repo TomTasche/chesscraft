@@ -10,12 +10,16 @@
         display: inline-block;
     }
 
-    .character-button {
+    .controls-button {
         display: block;
     }
 
-    .character-button-active {
+    .controls-button-active {
         background-color: burlywood;
+    }
+
+    .controls-image {
+        height: 34px;
     }
 </style>
 
@@ -23,7 +27,7 @@
 <canvas id="canvas" class="hidden"></canvas>
 
 <div class="container-controls hidden">
-    <button class="character-button attack-button">Angriff!</button>
+    <button class="controls-button attack-button">Angriff!</button>
 
     <hr>
 
@@ -37,7 +41,7 @@
 
 <script type="text/html" id="character-template">
     <div>
-        <button class="character-button"></button>
+        <button class="controls-button"></button>
     </div>
 </script>
 
