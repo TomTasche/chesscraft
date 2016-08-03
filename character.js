@@ -16,12 +16,13 @@
             strength = 50;
         }
 
-        var health;
+        var baseHealth;
         if (Character.TYPE_PAWN === type) {
-            health = 200;
+            baseHealth = 200;
         } else {
-            health = 100;
+            baseHealth = 100;
         }
+        var health = baseHealth;
 
         var range;
         if (Character.TYPE_ARCHER === type) {
@@ -56,6 +57,10 @@
 
         function getStrength() {
             return strength;
+        }
+
+        function getBaseHealth() {
+            return baseHealth;
         }
 
         function getHealth() {
@@ -126,6 +131,7 @@
         bridge.getType = getType;
         bridge.getPlayer = getPlayer;
         bridge.getStrength = getStrength;
+        bridge.getBaseHealth = getBaseHealth;
         bridge.getHealth = getHealth;
         bridge.setHealth = setHealth;
         bridge.getRange = getRange;

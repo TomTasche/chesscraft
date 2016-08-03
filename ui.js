@@ -209,6 +209,9 @@
 
                     context.fillRect(xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
                     context.restore();
+
+                    var healthString = character.getHealth() + " / " + character.getBaseHealth();
+                    context.fillText(healthString, xDistance, yDistance + 45);
                 }
             }
         }
