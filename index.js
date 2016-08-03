@@ -9,7 +9,7 @@
     var fieldsContainer = $(".container-fields");
     var playerSelect = $(".select-player");
 
-    function addField(container, type, name) {
+    function addFieldControl(container, type, name) {
         var characterContainer = $(characterTemplate.html());
 
         var button = characterContainer.find(".character-button");
@@ -35,7 +35,7 @@
         container.append(characterContainer);
     }
 
-    function addPlayer(select, playerNumber) {
+    function addPlayerControl(select, playerNumber) {
         var option = $("<option>");
         option.attr("value", playerNumber);
         option.text("Spieler " + playerNumber);
@@ -43,7 +43,7 @@
         select.append(option);
     }
 
-    function addCharacter(container, type, name) {
+    function addCharacterControl(container, type, name) {
         var characterContainer = $(characterTemplate.html());
 
         var button = characterContainer.find(".character-button");
@@ -99,8 +99,8 @@
     Game.initialize(10);
     var uiPromise = Ui.initialize();
 
-    Game.addCharacter(1, Character.TYPE_KNIGHT, 0, 1);
-    Game.addCharacter(2, Character.TYPE_ARCHER, 4, 3);
+    Game.addCharacterControl(1, Character.TYPE_KNIGHT, 0, 1);
+    Game.addCharacterControl(2, Character.TYPE_ARCHER, 4, 3);
 
     Game.addWater(1, 2);
 
@@ -112,14 +112,14 @@
 
         Ui.setMode(Ui.MODE_MOVE);
 
-        addPlayer(playerSelect, 1);
-        addPlayer(playerSelect, 2);
+        addPlayerControl(playerSelect, 1);
+        addPlayerControl(playerSelect, 2);
 
-        addCharacter(charactersContainer, Character.TYPE_ARCHER, "Bogenschütze");
-        addCharacter(charactersContainer, Character.TYPE_KNIGHT, "Ritter");
-        addCharacter(charactersContainer, Character.TYPE_PAWN, "Bauer");
+        addCharacterControl(charactersContainer, Character.TYPE_ARCHER, "Bogenschütze");
+        addCharacterControl(charactersContainer, Character.TYPE_KNIGHT, "Ritter");
+        addCharacterControl(charactersContainer, Character.TYPE_PAWN, "Bauer");
 
-        addField(fieldsContainer, Field.TYPE_WATER, "Wasser");
+        addFieldControl(fieldsContainer, Field.TYPE_WATER, "Wasser");
 
         $(".loading").addClass("hidden");
         $("#canvas").removeClass("hidden");
