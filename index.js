@@ -1,6 +1,7 @@
 (function() {
     var isWaterMode = false;
     var isCharacterMode = false;
+    var isAttackMode = false;
 
     var characterTemplate = $("#character-template");
 
@@ -8,6 +9,7 @@
     var charactersContainer = $(".container-characters");
     var fieldsContainer = $(".container-fields");
     var playerSelect = $(".select-player");
+    var attackButton = $(".attack-button");
 
     function addFieldControl(container, type, name) {
         var characterContainer = $(characterTemplate.html());
@@ -19,12 +21,19 @@
         button.click(function() {
             isWaterMode = !isWaterMode;
             isCharacterMode = false;
+            isAttackMode = false;
 
             controlsContainer.find(".character-button").removeClass("character-button-active");
             button.toggleClass("character-button-active", isWaterMode);
 
-            toggleCharacterMode();
-            toggleWaterMode();
+            var mode;
+            if (isWaterMode) {
+                mode = Ui.MODE_WATER;
+            } else {
+                mode = Ui.MODE_MOVE;
+            }
+
+            Ui.setMode(mode);
         });
 
         var asset = Field.ASSETS[type];
@@ -53,12 +62,23 @@
         button.click(function() {
             isCharacterMode = !isCharacterMode;
             isWaterMode = false;
+            isAttackMode = false;
 
             controlsContainer.find(".character-button").removeClass("character-button-active");
             button.toggleClass("character-button-active", isCharacterMode);
 
-            toggleWaterMode();
-            toggleCharacterMode(type);
+            var mode;
+            var data = {};
+            if (isCharacterMode) {
+                mode = Ui.MODE_CHARACTER;
+
+                data[Ui.MODE_DATA_CHARACTER_TYPE] = type;
+                data[Ui.MODE_DATA_PLAYER] = parseInt(playerSelect.val());
+            } else {
+                mode = Ui.MODE_MOVE;
+            }
+
+            Ui.setMode(mode, data);
         });
 
         var player = playerSelect.val();
@@ -70,37 +90,11 @@
         container.append(characterContainer);
     }
 
-    function toggleWaterMode() {
-        var mode;
-        if (isWaterMode) {
-            mode = Ui.MODE_WATER;
-        } else {
-            mode = Ui.MODE_MOVE;
-        }
-
-        Ui.setMode(mode);
-    }
-
-    function toggleCharacterMode(type) {
-        var mode;
-        var data = {};
-        if (isCharacterMode) {
-            mode = Ui.MODE_CHARACTER;
-
-            data[Ui.MODE_DATA_CHARACTER_TYPE] = type;
-            data[Ui.MODE_DATA_PLAYER] = playerSelect.val();
-        } else {
-            mode = Ui.MODE_MOVE;
-        }
-
-        Ui.setMode(mode, data);
-    }
-
     Game.initialize(10);
     var uiPromise = Ui.initialize();
 
-    Game.addCharacterControl(1, Character.TYPE_KNIGHT, 0, 1);
-    Game.addCharacterControl(2, Character.TYPE_ARCHER, 4, 3);
+    Game.addCharacter(1, Character.TYPE_KNIGHT, 0, 1);
+    Game.addCharacter(2, Character.TYPE_ARCHER, 4, 3);
 
     Game.addWater(1, 2);
 
@@ -120,6 +114,23 @@
         addCharacterControl(charactersContainer, Character.TYPE_PAWN, "Bauer");
 
         addFieldControl(fieldsContainer, Field.TYPE_WATER, "Wasser");
+
+        attackButton.click(function() {
+            isAttackMode = !isAttackMode;
+            isCharacterMode = false;
+            isWaterMode = false;
+
+            controlsContainer.find(".character-button").removeClass("character-button-active");
+            attackButton.toggleClass("character-button-active", isAttackMode);
+
+            var mode;
+            if (isAttackMode) {
+                mode = Ui.MODE_ATTACK;
+            } else {
+                mode = Ui.MODE_MOVE;
+            }
+            Ui.setMode(mode);
+        });
 
         $(".loading").addClass("hidden");
         $("#canvas").removeClass("hidden");

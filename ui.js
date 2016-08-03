@@ -7,6 +7,7 @@
     var MODE_MOVE = "move";
     var MODE_WATER = "water";
     var MODE_CHARACTER = "character";
+    var MODE_ATTACK = "attack";
 
     var MODE_DATA_CHARACTER_TYPE = "characterType";
     var MODE_DATA_PLAYER = "player";
@@ -111,6 +112,17 @@
                 var field = grid[x][y];
                 selectedCharacter = field.getOccupant();
             }
+        } else if (currentMode === MODE_ATTACK) {
+            if (selectedCharacter) {
+                Game.attack(selectedCharacter, x, y);
+
+                selectedCharacter = null;
+            } else {
+                var grid = Game.getGrid();
+
+                var field = grid[x][y];
+                selectedCharacter = field.getOccupant();
+            }
         } else if (currentMode === MODE_WATER) {
             var character = Game.getCharacter(x, y);
             if (!character) {
@@ -166,8 +178,7 @@
                 var character = field.getOccupant();
 
                 if (field.getType() !== Field.TYPE_GRASS) {
-                    // TODO: do not hardcode
-                    var backgroundImage = getImageForAsset("grass_RANDOM.png");
+                    var backgroundImage = getImageForAsset(Field.ASSETS[Field.TYPE_GRASS]);
                     context.drawImage(backgroundImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
                 }
 
@@ -180,7 +191,6 @@
                     var characterImage = getImageForAsset(characterAsset, character.getPlayer());
 
                     context.drawImage(characterImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
-
 
                     var color;
                     if (character === selectedCharacter) {
@@ -235,6 +245,7 @@
     bridge.MODE_MOVE = MODE_MOVE;
     bridge.MODE_WATER = MODE_WATER;
     bridge.MODE_CHARACTER = MODE_CHARACTER;
+    bridge.MODE_ATTACK = MODE_ATTACK;
 
     bridge.MODE_DATA_CHARACTER_TYPE = MODE_DATA_CHARACTER_TYPE;
     bridge.MODE_DATA_PLAYER = MODE_DATA_PLAYER;

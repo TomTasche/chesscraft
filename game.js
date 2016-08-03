@@ -71,7 +71,7 @@
     }
 
     function isMovePossible(character, newX, newY) {
-        var gridSize = Game.getGridSize();
+        var gridSize = getGridSize();
 
         var oldX = character.getX();
         var oldY = character.getY();
@@ -86,6 +86,10 @@
 
         var field = grid[newX][newY];
         if (field.getType() !== Field.TYPE_GRASS) {
+            return false;
+        }
+
+        if (field.getOccupant()) {
             return false;
         }
 
@@ -150,6 +154,37 @@
         return true;
     }
 
+    function isAttackPossible(character, enemyX, enemyY) {
+        var gridSize = getGridSize();
+
+        var currentX = character.getX();
+        var currentY = character.getY();
+
+        var deltaX = Math.abs(currentX - enemyX);
+        var deltaY = Math.abs(currentY - enemyY);
+        var maxDelta = Math.max(deltaX, deltaY);
+
+        if (character.getRange() < maxDelta) {
+            return false;
+        }
+
+        if (currentX === enemyX && currentY === enemyY) {
+            return false;
+        }
+
+        var isOutOfBounds = Math.abs(enemyX) >= gridSize || Math.abs(enemyY) >= gridSize;
+        if (isOutOfBounds) {
+            return false;
+        }
+
+        var field = grid[enemyX][enemyY];
+        if (!field.getOccupant()) {
+            return false;
+        }
+
+        return true;
+    }
+
     function moveCharacter(character, newX, newY) {
         if (!isMovePossible(character, newX, newY)) {
             return false;
@@ -170,6 +205,34 @@
         return true;
     }
 
+    function attack(character, enemyX, enemyY) {
+        if (!isAttackPossible(character, enemyX, enemyY)) {
+            return false;
+        }
+
+        var currentX = character.getX();
+        var currentY = character.getY();
+
+        var currentField = grid[currentX][currentY];
+
+        var otherField = grid[enemyX][enemyY];
+        var otherCharacter = otherField.getOccupant();
+
+        var enemyRemainingHealth = otherCharacter.getHealth();
+        enemyRemainingHealth -= character.getStrength();
+        otherCharacter.setHealth(enemyRemainingHealth);
+
+        if (enemyRemainingHealth <= 0) {
+            otherField.setOccupant(null);
+        }
+
+        var currentHealth = character.getHealth();
+        currentHealth -= 10;
+        character.setHealth(currentHealth);
+
+        return true;
+    }
+
     var bridge = {};
     bridge.initialize = initialize;
     bridge.getGridSize = getGridSize;
@@ -178,6 +241,7 @@
     bridge.addWater = addWater;
     bridge.getCharacter = getCharacter;
     bridge.moveCharacter = moveCharacter;
+    bridge.attack = attack;
     bridge.isVerticalMove = isVerticalMove;
     bridge.isHorizontalMove = isHorizontalMove;
     bridge.isDiagonalMove = isDiagonalMove;

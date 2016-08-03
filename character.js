@@ -7,6 +7,29 @@
 
         var moved;
 
+        var strength;
+        if (Character.TYPE_PAWN === type) {
+            strength = 10;
+        } else if (Character.TYPE_ARCHER === type) {
+            strength = 30;
+        } else if (Character.TYPE_KNIGHT === type) {
+            strength = 50;
+        }
+
+        var health;
+        if (Character.TYPE_PAWN === type) {
+            health = 200;
+        } else {
+            health = 100;
+        }
+
+        var range;
+        if (Character.TYPE_ARCHER === type) {
+            range = 5;
+        } else {
+            range = 1;
+        }
+
         function getX() {
             return x;
         }
@@ -29,6 +52,22 @@
 
         function getPlayer() {
             return player;
+        }
+
+        function getStrength() {
+            return strength;
+        }
+
+        function getHealth() {
+            return health;
+        }
+
+        function setHealth(healthParameter) {
+            health = healthParameter;
+        }
+
+        function getRange() {
+            return range;
         }
 
         function isMovePossible(newX, newY) {
@@ -86,6 +125,10 @@
         bridge.setY = setY;
         bridge.getType = getType;
         bridge.getPlayer = getPlayer;
+        bridge.getStrength = getStrength;
+        bridge.getHealth = getHealth;
+        bridge.setHealth = setHealth;
+        bridge.getRange = getRange;
         bridge.isMovePossible = isMovePossible;
         bridge.toString = toString;
 
