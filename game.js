@@ -44,6 +44,8 @@
         character.setY(y);
 
         grid[x][y].setOccupant(character);
+
+        calculateFog();
     }
 
     function addWater(x, y) {
