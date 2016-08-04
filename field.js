@@ -4,6 +4,8 @@
     var clazz = function(type) {
         var occupant;
 
+        var foggy = true;
+
         function getOccupant() {
             return occupant;
         }
@@ -20,6 +22,14 @@
             type = typeParameter;
         }
 
+        function getFoggy() {
+            return foggy;
+        }
+
+        function setFoggy(foggyParameter) {
+            foggy = foggyParameter;
+        }
+
         function toString() {
             if (occupant) {
                 return occupant.toString();
@@ -29,11 +39,12 @@
         }
 
         var bridge = {};
-
         bridge.getOccupant = getOccupant;
         bridge.setOccupant = setOccupant;
         bridge.getType = getType;
         bridge.setType = setType;
+        bridge.getFoggy = getFoggy;
+        bridge.setFoggy = setFoggy;
         bridge.toString = toString;
 
         return bridge;
@@ -41,7 +52,7 @@
     clazz.TYPE_GRASS = "grass";
     clazz.TYPE_WATER = "water";
 
-    ASSETS[clazz.TYPE_GRASS] = "grass_RANDOM.png";
+    ASSETS[clazz.TYPE_GRASS] = "grass_RANDOM3.png";
     ASSETS[clazz.TYPE_WATER] = "water.png";
 
     clazz.ASSETS = ASSETS;

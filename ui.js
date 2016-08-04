@@ -3,6 +3,7 @@
     var SEPARATOR_WIDTH = 0.5;
     var SELECTOR_WIDTH = 3;
     var CHARACTER_SIZE = FIELD_SIZE;
+    var FOG_SIZE = CHARACTER_SIZE + 30;
 
     var MODE_MOVE = "move";
     var MODE_WATER = "water";
@@ -39,6 +40,15 @@
         assets.push("grass_2.png");
         assets.push("grass_3.png");
         assets.push("water.png");
+
+        assets.push("fog_1.png");
+        assets.push("fog_2.png");
+        assets.push("fog_3.png");
+        assets.push("fog_4.png");
+        assets.push("fog_5.png");
+        assets.push("fog_6.png");
+        assets.push("fog_7.png");
+        assets.push("fog_8.png");
 
         var imagePromises = [];
         for (var i = 0; i < assets.length; i++) {
@@ -146,8 +156,11 @@
     function getImageForAsset(asset, player) {
         asset = asset.replace("PLAYER", player);
 
-        var random = getRandomInt(1, 3);
-        asset = asset.replace("RANDOM", random);
+        var random3 = getRandomInt(1, 3);
+        asset = asset.replace("RANDOM3", random3);
+
+        var random8 = getRandomInt(1, 8);
+        asset = asset.replace("RANDOM8", random8);
 
         var img = images[asset];
         return img;
@@ -212,6 +225,11 @@
 
                     var healthString = character.getHealth() + " / " + character.getBaseHealth();
                     context.fillText(healthString, xDistance, yDistance + 45);
+                }
+
+                if (field.getFoggy()) {
+                    var fogImage = getImageForAsset("fog_RANDOM8.png");
+                    context.drawImage(fogImage, xDistance - 15, yDistance - 15, FOG_SIZE, FOG_SIZE);
                 }
             }
         }

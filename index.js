@@ -96,7 +96,7 @@
         container.append(characterContainer);
     }
 
-    Game.initialize(10);
+    Game.initialize(15);
     var uiPromise = Ui.initialize();
 
     Game.addCharacter(1, Character.TYPE_KNIGHT, 0, 1);

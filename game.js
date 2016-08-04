@@ -55,6 +55,39 @@
         return grid[x][y].getOccupant();
     }
 
+    function calculateFog() {
+        var gridSize = getGridSize();
+        for (var x = 0; x < gridSize; x++) {
+            for (var y = 0; y < gridSize; y++) {
+                var field = grid[x][y];
+
+                field.setFoggy(true);
+            }
+        }
+
+        for (var x = 0; x < gridSize; x++) {
+            for (var y = 0; y < gridSize; y++) {
+                var field = grid[x][y];
+
+                var character = field.getOccupant();
+                if (character) {
+                    var range = 2;
+
+                    var rangeX = x - range;
+                    rangeX = Math.max(0, rangeX);
+                    for (; rangeX <= x + range; rangeX++) {
+                        var rangeY = y - range;
+                        rangeY = Math.max(0, rangeY);
+                        for (; rangeY <= y + range; rangeY++) {
+                            var rangeField = grid[rangeX][rangeY];
+                            rangeField.setFoggy(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     function isVerticalMove(oldX, oldY, newX, newY) {
         return newX === oldX && newY !== oldY;
     }
@@ -202,6 +235,8 @@
         character.setX(newX);
         character.setY(newY);
 
+        calculateFog();
+
         return true;
     }
 
@@ -224,6 +259,8 @@
 
         if (enemyRemainingHealth <= 0) {
             otherField.setOccupant(null);
+
+            calculateFog();
         }
 
         var currentHealth = character.getHealth();
