@@ -1,7 +1,11 @@
 (function() {
     var grid = [];
 
-    function initialize(gridSize) {
+    var currentPlayer;
+
+    function initialize(gridSize, currentPlayerParameter) {
+        currentPlayer = currentPlayerParameter;
+
         for (var i = 0; i < gridSize; i++) {
             var row = [];
             for (var j = 0; j < gridSize; j++) {
@@ -75,7 +79,21 @@
     function calculateFog() {
         var gridSize = getGridSize();
         // do not make first and last row foggy
-        for (var x = 1; x < gridSize - 1; x++) {
+        var x;
+        if (currentPlayer === 1) {
+            x = 1;
+        } else if (currentPlayer === 2) {
+            x = 0;
+        }
+
+        var maxX;
+        if (currentPlayer === 1) {
+            maxX = gridSize;
+        } else if (currentPlayer === 2) {
+            maxX = gridSize - 1;
+        }
+
+        for (; x < maxX; x++) {
             for (var y = 0; y < gridSize; y++) {
                 var field = grid[x][y];
 
