@@ -18,6 +18,7 @@
 
     var selectedCharacter;
 
+    var currentPlayer;
     var currentMode;
     var currentModeData;
 
@@ -96,6 +97,10 @@
         return future.promise();
     }
 
+    function setCurrentPlayer(currentPlayerParameter) {
+        currentPlayer = currentPlayerParameter;
+    }
+
     function calculateDistance(position) {
         var distance = position * FIELD_SIZE + position * SEPARATOR_WIDTH;
 
@@ -168,6 +173,12 @@
             Game.addCharacter(player, characterType, x, y);
 
             dirty = true;
+        }
+
+        if (selectedCharacter) {
+            if (selectedCharacter.getPlayer() !== currentPlayer) {
+                selectedCharacter = null;
+            }
         }
 
         if (dirty) {
@@ -319,8 +330,8 @@
     }
 
     var bridge = {};
-
     bridge.initialize = initialize;
+    bridge.setCurrentPlayer = setCurrentPlayer;
     bridge.getImageForAsset = getImageForAsset;
     bridge.render = render;
     bridge.setMode = setMode;

@@ -103,27 +103,22 @@
     var currentPlayer;
     var urlHash = window.location.hash.substring(1);
     if (urlHash) {
-        if (urlHash !== "test") {
-            currentPlayer = parseInt(urlHash);
-        }
+        currentPlayer = parseInt(urlHash);
     } else {
         // TODO: ask which player
         console.warn("choose player by appending a hash to the url and reloading");
     }
 
     uiPromise.done(function() {
+        Ui.setCurrentPlayer(currentPlayer);
+
         Game.initialize(15, currentPlayer);
 
         Ui.render();
 
         Ui.setMode(Ui.MODE_MOVE);
 
-        if (currentPlayer) {
-            addPlayerControl(playerSelect, currentPlayer);
-        } else {
-            addPlayerControl(playerSelect, 1);
-            addPlayerControl(playerSelect, 2);
-        }
+        addPlayerControl(playerSelect, currentPlayer);
 
         addCharacterControl(charactersContainer, Character.TYPE_ARCHER, "Bogenschütze");
         addCharacterControl(charactersContainer, Character.TYPE_KNIGHT, "Ritter");
