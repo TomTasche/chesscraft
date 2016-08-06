@@ -53,7 +53,7 @@
     clazz.TYPE_WATER = "water";
 
     ASSETS[clazz.TYPE_GRASS] = "grass_RANDOM3.png";
-    ASSETS[clazz.TYPE_WATER] = "water.png";
+    ASSETS[clazz.TYPE_WATER] = "waterDIRECTION.png";
 
     clazz.ASSETS = ASSETS;
 

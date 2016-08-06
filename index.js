@@ -86,7 +86,9 @@
 
         var player = playerSelect.val();
         var asset = Character.ASSETS[type];
-        var img = Ui.getImageForAsset(asset, player);
+        var img = Ui.getImageForAsset(asset, {
+            player: player
+        });
 
         var imageElement = $(img);
         imageElement.addClass("controls-image");
@@ -103,6 +105,7 @@
     Game.addCharacter(2, Character.TYPE_ARCHER, 4, 3);
 
     Game.addWater(1, 2);
+    Game.addWater(1, 3);
 
     var character = Game.getCharacter(4, 3);
     Game.moveCharacter(character, 1, 0);

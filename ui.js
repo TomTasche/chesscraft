@@ -39,7 +39,22 @@
         assets.push("grass_1.png");
         assets.push("grass_2.png");
         assets.push("grass_3.png");
+
         assets.push("water.png");
+        assets.push("water_N.png");
+        assets.push("water_E.png");
+        assets.push("water_S.png");
+        assets.push("water_W.png");
+        assets.push("water_N_S.png");
+        assets.push("water_E_W.png");
+        assets.push("water_E_S.png");
+        assets.push("water_E_S_W.png");
+        assets.push("water_N_E.png");
+        assets.push("water_N_E_S.png");
+        assets.push("water_N_E_W.png");
+        assets.push("water_N_S_W.png");
+        assets.push("water_N_W.png");
+        assets.push("water_S_W.png");
 
         assets.push("fog_1.png");
         assets.push("fog_2.png");
@@ -111,11 +126,15 @@
         var x = Math.floor(clickY / (FIELD_SIZE + SEPARATOR_WIDTH));
         var y = Math.floor(clickX / (FIELD_SIZE + SEPARATOR_WIDTH));
 
+        var dirty = false;
+
         if (currentMode === MODE_MOVE) {
             if (selectedCharacter) {
                 Game.moveCharacter(selectedCharacter, x, y);
 
                 selectedCharacter = null;
+
+                dirty = true;
             } else {
                 var grid = Game.getGrid();
 
@@ -127,6 +146,8 @@
                 Game.attack(selectedCharacter, x, y);
 
                 selectedCharacter = null;
+
+                dirty = true;
             } else {
                 var grid = Game.getGrid();
 
@@ -137,15 +158,21 @@
             var character = Game.getCharacter(x, y);
             if (!character) {
                 Game.addWater(x, y);
+
+                dirty = true;
             }
         } else if (currentMode === MODE_CHARACTER) {
             var characterType = currentModeData[MODE_DATA_CHARACTER_TYPE];
             var player = currentModeData[MODE_DATA_PLAYER];
 
             Game.addCharacter(player, characterType, x, y);
+
+            dirty = true;
         }
 
-        render();
+        if (dirty) {
+            render();
+        }
     }
 
     // taken from: http://stackoverflow.com/a/1527820/198996
@@ -153,7 +180,10 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function getImageForAsset(asset, player) {
+    function getImageForAsset(asset, metadata) {
+        metadata = metadata || {};
+
+        var player = metadata.player;
         asset = asset.replace("PLAYER", player);
 
         var random3 = getRandomInt(1, 3);
@@ -162,8 +192,22 @@
         var random8 = getRandomInt(1, 8);
         asset = asset.replace("RANDOM8", random8);
 
+        var direction = metadata.direction;
+        asset = asset.replace("DIRECTION", direction);
+
         var img = images[asset];
         return img;
+    }
+
+    function isWater(x, y) {
+        var gridSize = Game.getGridSize();
+
+        var isOutOfBounds = Math.abs(x) >= gridSize || Math.abs(y) >= gridSize || x < 0 || y < 0;
+        if (isOutOfBounds) {
+            return false;
+        }
+
+        return Game.getGrid()[x][y].getType() === Field.TYPE_WATER;
     }
 
     function render() {
@@ -190,18 +234,36 @@
                 var field = grid[x][y];
                 var character = field.getOccupant();
 
-                if (field.getType() !== Field.TYPE_GRASS) {
-                    var backgroundImage = getImageForAsset(Field.ASSETS[Field.TYPE_GRASS]);
-                    context.drawImage(backgroundImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
+                var fieldMetadata;
+                if (field.getType() === Field.TYPE_WATER) {
+                    fieldMetadata = {};
+
+                    var direction = "";
+                    if (isWater(x - 1, y)) {
+                        direction += "_N";
+                    }
+                    if (isWater(x, y + 1)) {
+                        direction += "_E";
+                    }
+                    if (isWater(x + 1, y)) {
+                        direction += "_S";
+                    }
+                    if (isWater(x, y - 1)) {
+                        direction += "_W";
+                    }
+
+                    fieldMetadata.direction = direction;
                 }
 
                 var fieldAsset = Field.ASSETS[field.getType()];
-                var fieldImage = getImageForAsset(fieldAsset);
+                var fieldImage = getImageForAsset(fieldAsset, fieldMetadata);
                 context.drawImage(fieldImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
 
                 if (character) {
                     var characterAsset = Character.ASSETS[character.getType()];
-                    var characterImage = getImageForAsset(characterAsset, character.getPlayer());
+                    var characterImage = getImageForAsset(characterAsset, {
+                        player: character.getPlayer()
+                    });
 
                     context.drawImage(characterImage, xDistance, yDistance, CHARACTER_SIZE, CHARACTER_SIZE);
 
