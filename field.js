@@ -4,7 +4,7 @@
     var clazz = function(type) {
         var occupant;
 
-        var foggy = true;
+        var foggy = false;
 
         function getOccupant() {
             return occupant;

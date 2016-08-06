@@ -12,6 +12,8 @@
 
             grid.push(row);
         }
+
+        calculateFog();
     }
 
     function getGridSize() {
@@ -38,7 +40,16 @@
         console.table(stringGrid);
     }
 
+    function isFoggy(x, y) {
+        var field = grid[x][y];
+        return field.getFoggy();
+    }
+
     function addCharacter(player, type, x, y) {
+        if (isFoggy(x, y)) {
+            return false;
+        }
+
         var character = new Character(player, type);
         character.setX(x);
         character.setY(y);
@@ -49,6 +60,10 @@
     }
 
     function addWater(x, y) {
+        if (isFoggy(x, y)) {
+            return false;
+        }
+
         var field = grid[x][y];
         field.setType(Field.TYPE_WATER);
     }
@@ -59,7 +74,8 @@
 
     function calculateFog() {
         var gridSize = getGridSize();
-        for (var x = 0; x < gridSize; x++) {
+        // do not make first and last row foggy
+        for (var x = 1; x < gridSize - 1; x++) {
             for (var y = 0; y < gridSize; y++) {
                 var field = grid[x][y];
 
@@ -77,10 +93,10 @@
 
                     var rangeX = x - range;
                     rangeX = Math.max(0, rangeX);
-                    for (; rangeX <= x + range; rangeX++) {
+                    for (; rangeX <= Math.min(gridSize - 1, x + range); rangeX++) {
                         var rangeY = y - range;
                         rangeY = Math.max(0, rangeY);
-                        for (; rangeY <= y + range; rangeY++) {
+                        for (; rangeY <= Math.min(gridSize - 1, y + range); rangeY++) {
                             var rangeField = grid[rangeX][rangeY];
                             rangeField.setFoggy(false);
                         }

@@ -101,15 +101,6 @@
     Game.initialize(15);
     var uiPromise = Ui.initialize();
 
-    Game.addCharacter(1, Character.TYPE_KNIGHT, 0, 1);
-    Game.addCharacter(2, Character.TYPE_ARCHER, 4, 3);
-
-    Game.addWater(1, 2);
-    Game.addWater(1, 3);
-
-    var character = Game.getCharacter(4, 3);
-    Game.moveCharacter(character, 1, 0);
-
     uiPromise.done(function() {
         Ui.render();
 
