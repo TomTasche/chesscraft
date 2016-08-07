@@ -73,8 +73,8 @@
     }
 
     function calculateFogs() {
-      calculateFog(1);
-      calculateFog(2);
+        calculateFog(1);
+        calculateFog(2);
     }
 
     function calculateFog(player) {
@@ -108,6 +108,10 @@
 
                 var character = field.getOccupant();
                 if (character) {
+                    if (character.getPlayer() !== player) {
+                        continue;
+                    }
+
                     var range = 2;
 
                     var rangeX = x - range;

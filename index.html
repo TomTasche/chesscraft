@@ -6,6 +6,10 @@
         display: none !important;
     }
 
+    .game {
+        display: inline-block;
+    }
+
     .container-controls {
         display: inline-block;
     }
@@ -26,7 +30,7 @@
 <div class="games"></div>
 
 <script type="text/html" id="ui-template">
-    <div>
+    <div class="game">
         <div class="loading">Wird geladen...</div>
         <canvas class="canvas hidden"></canvas>
 
@@ -66,4 +70,7 @@
     var container = $(".games");
 
     var index1 = new Index(container, 1);
+    var index2 = new Index(container, 2);
+
+    Master.nextTurn();
 </script>

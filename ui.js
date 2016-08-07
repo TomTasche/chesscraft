@@ -26,6 +26,8 @@ var Ui = function() {
     function initialize(canvasParameter, currentPlayerParameter) {
         currentPlayer = currentPlayerParameter;
 
+        Master.addOnYourTurnListener(currentPlayer, onYourTurn);
+
         var future = $.Deferred();
 
         canvas = canvasParameter;
@@ -78,8 +80,6 @@ var Ui = function() {
         }
 
         $.when.apply($, imagePromises).done(function() {
-            Master.addOnYourTurnListener(currentPlayer, onYourTurn);
-
             future.resolve();
         });
 
@@ -94,6 +94,8 @@ var Ui = function() {
     }
 
     function onYourTurn(moveCallback, attackCallback, spawnCharacterCallback, spawnFieldCallback) {
+        render();
+
         var promise = awaitNextTurn();
         promise.done(function(turn) {
             if (turn.mode === MODE_MOVE) {
@@ -154,8 +156,7 @@ var Ui = function() {
         var x = Math.floor(clickY / (FIELD_SIZE + SEPARATOR_WIDTH));
         var y = Math.floor(clickX / (FIELD_SIZE + SEPARATOR_WIDTH));
 
-        var dirty = false;
-
+        var turned = false;
         var turn = {};
         if (currentMode === MODE_MOVE) {
             if (selectedCharacter) {
@@ -166,7 +167,7 @@ var Ui = function() {
 
                 selectedCharacter = null;
 
-                dirty = true;
+                turned = true;
             } else {
                 var grid = Game.getGrid();
 
@@ -182,7 +183,7 @@ var Ui = function() {
 
                 selectedCharacter = null;
 
-                dirty = true;
+                turned = true;
             } else {
                 var grid = Game.getGrid();
 
@@ -203,7 +204,7 @@ var Ui = function() {
             turn.x = x;
             turn.y = y;
 
-            dirty = true;
+            turned = true;
         }
 
         if (selectedCharacter) {
@@ -212,14 +213,11 @@ var Ui = function() {
             }
         }
 
-        if (turnFuture) {
+        if (turnFuture && turned) {
             turnFuture.resolve(turn);
-
-            if (dirty) {
-                render();
-            }
-
             turnFuture = null;
+
+            render();
         }
     }
 
