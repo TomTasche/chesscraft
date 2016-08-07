@@ -4,7 +4,7 @@
     var clazz = function(type) {
         var occupant;
 
-        var foggy = false;
+        var foggyForPlayer = {};
 
         function getOccupant() {
             return occupant;
@@ -22,12 +22,12 @@
             type = typeParameter;
         }
 
-        function getFoggy() {
-            return foggy;
+        function getFoggy(player) {
+            return foggyForPlayer[player];
         }
 
-        function setFoggy(foggyParameter) {
-            foggy = foggyParameter;
+        function setFoggy(player, foggyParameter) {
+            foggyForPlayer[player] = foggyParameter;
         }
 
         function toString() {

@@ -1,11 +1,7 @@
 (function() {
     var grid = [];
 
-    var currentPlayer;
-
-    function initialize(gridSize, currentPlayerParameter) {
-        currentPlayer = currentPlayerParameter;
-
+    function initialize(gridSize) {
         for (var i = 0; i < gridSize; i++) {
             var row = [];
             for (var j = 0; j < gridSize; j++) {
@@ -17,7 +13,7 @@
             grid.push(row);
         }
 
-        calculateFog();
+        calculateFogs();
     }
 
     function getGridSize() {
@@ -44,13 +40,13 @@
         console.table(stringGrid);
     }
 
-    function isFoggy(x, y) {
+    function isFoggy(player, x, y) {
         var field = grid[x][y];
-        return field.getFoggy();
+        return field.getFoggy(player);
     }
 
     function addCharacter(player, type, x, y) {
-        if (isFoggy(x, y)) {
+        if (isFoggy(player, x, y)) {
             return false;
         }
 
@@ -60,11 +56,11 @@
 
         grid[x][y].setOccupant(character);
 
-        calculateFog();
+        calculateFogs();
     }
 
-    function addWater(x, y) {
-        if (isFoggy(x, y)) {
+    function addWater(player, x, y) {
+        if (isFoggy(player, x, y)) {
             return false;
         }
 
@@ -76,20 +72,25 @@
         return grid[x][y].getOccupant();
     }
 
-    function calculateFog() {
+    function calculateFogs() {
+      calculateFog(1);
+      calculateFog(2);
+    }
+
+    function calculateFog(player) {
         var gridSize = getGridSize();
         // do not make first and last row foggy
         var x;
-        if (currentPlayer === 1) {
+        if (player === 1) {
             x = 1;
-        } else if (currentPlayer === 2) {
+        } else if (player === 2) {
             x = 0;
         }
 
         var maxX;
-        if (currentPlayer === 1) {
+        if (player === 1) {
             maxX = gridSize;
-        } else if (currentPlayer === 2) {
+        } else if (player === 2) {
             maxX = gridSize - 1;
         }
 
@@ -97,7 +98,7 @@
             for (var y = 0; y < gridSize; y++) {
                 var field = grid[x][y];
 
-                field.setFoggy(true);
+                field.setFoggy(player, true);
             }
         }
 
@@ -116,7 +117,7 @@
                         rangeY = Math.max(0, rangeY);
                         for (; rangeY <= Math.min(gridSize - 1, y + range); rangeY++) {
                             var rangeField = grid[rangeX][rangeY];
-                            rangeField.setFoggy(false);
+                            rangeField.setFoggy(player, false);
                         }
                     }
                 }
@@ -271,7 +272,7 @@
         character.setX(newX);
         character.setY(newY);
 
-        calculateFog();
+        calculateFogs();
 
         return true;
     }
@@ -296,7 +297,7 @@
         if (enemyRemainingHealth <= 0) {
             otherField.setOccupant(null);
 
-            calculateFog();
+            calculateFogs();
         }
 
         var currentHealth = character.getHealth();

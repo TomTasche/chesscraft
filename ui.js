@@ -1,4 +1,4 @@
-(function() {
+var Ui = function() {
     var FIELD_SIZE = 50;
     var SEPARATOR_WIDTH = 0.5;
     var SELECTOR_WIDTH = 3;
@@ -11,7 +11,6 @@
     var MODE_ATTACK = "attack";
 
     var MODE_DATA_CHARACTER_TYPE = "characterType";
-    var MODE_DATA_PLAYER = "player";
 
     var canvas;
     var images;
@@ -22,10 +21,14 @@
     var currentMode;
     var currentModeData;
 
-    function initialize() {
+    var turnFuture;
+
+    function initialize(canvasParameter, currentPlayerParameter) {
+        currentPlayer = currentPlayerParameter;
+
         var future = $.Deferred();
 
-        canvas = $("#canvas");
+        canvas = canvasParameter;
         images = {};
 
         var assets = [];
@@ -75,10 +78,34 @@
         }
 
         $.when.apply($, imagePromises).done(function() {
+            Master.addOnYourTurnListener(currentPlayer, onYourTurn);
+
             future.resolve();
         });
 
         return future.promise();
+    }
+
+    function awaitNextTurn() {
+        var future = $.Deferred();
+        turnFuture = future;
+
+        return future.promise();
+    }
+
+    function onYourTurn(moveCallback, attackCallback, spawnCharacterCallback, spawnFieldCallback) {
+        var promise = awaitNextTurn();
+        promise.done(function(turn) {
+            if (turn.mode === MODE_MOVE) {
+                moveCallback(turn.character, turn.x, turn.y);
+            } else if (turn.mode === MODE_ATTACK) {
+                attackCallback(turn.character, turn.x, turn.y);
+            } else if (turn.mode === MODE_WATER) {
+                spawnFieldCallback(turn.player, Field.TYPE_WATER, turn.x, turn.y);
+            } else if (turn.mode === MODE_CHARACTER) {
+                spawnCharacterCallback(turn.player, turn.characterType, turn.x, turn.y);
+            }
+        });
     }
 
     function loadAsset(asset) {
@@ -95,10 +122,6 @@
         images[asset] = img;
 
         return future.promise();
-    }
-
-    function setCurrentPlayer(currentPlayerParameter) {
-        currentPlayer = currentPlayerParameter;
     }
 
     function calculateDistance(position) {
@@ -133,9 +156,13 @@
 
         var dirty = false;
 
+        var turn = {};
         if (currentMode === MODE_MOVE) {
             if (selectedCharacter) {
-                Game.moveCharacter(selectedCharacter, x, y);
+                turn.character = selectedCharacter;
+                turn.mode = MODE_MOVE;
+                turn.x = x;
+                turn.y = y;
 
                 selectedCharacter = null;
 
@@ -148,7 +175,10 @@
             }
         } else if (currentMode === MODE_ATTACK) {
             if (selectedCharacter) {
-                Game.attack(selectedCharacter, x, y);
+                turn.character = selectedCharacter;
+                turn.mode = MODE_ATTACK;
+                turn.x = x;
+                turn.y = y;
 
                 selectedCharacter = null;
 
@@ -160,17 +190,18 @@
                 selectedCharacter = field.getOccupant();
             }
         } else if (currentMode === MODE_WATER) {
-            var character = Game.getCharacter(x, y);
-            if (!character) {
-                Game.addWater(x, y);
-
-                dirty = true;
-            }
+            turn.player = currentPlayer;
+            turn.mode = MODE_WATER;
+            turn.x = x;
+            turn.y = y;
         } else if (currentMode === MODE_CHARACTER) {
             var characterType = currentModeData[MODE_DATA_CHARACTER_TYPE];
-            var player = currentModeData[MODE_DATA_PLAYER];
 
-            Game.addCharacter(player, characterType, x, y);
+            turn.characterType = characterType;
+            turn.player = currentPlayer;
+            turn.mode = MODE_CHARACTER;
+            turn.x = x;
+            turn.y = y;
 
             dirty = true;
         }
@@ -181,8 +212,14 @@
             }
         }
 
-        if (dirty) {
-            render();
+        if (turnFuture) {
+            turnFuture.resolve(turn);
+
+            if (dirty) {
+                render();
+            }
+
+            turnFuture = null;
         }
     }
 
@@ -222,15 +259,15 @@
     }
 
     function render() {
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext("2d");
+        var domCanvas = canvas[0];
+        var context = domCanvas.getContext("2d");
 
-        canvas.addEventListener("click", onCanvasClicked, false);
+        domCanvas.addEventListener("click", onCanvasClicked, false);
 
         var length = calculateGridDistance(Game.getGridSize());
 
-        canvas.width = length;
-        canvas.height = length;
+        domCanvas.width = length;
+        domCanvas.height = length;
 
         var grid = Game.getGrid();
         var gridSize = Game.getGridSize();
@@ -300,7 +337,7 @@
                     context.fillText(healthString, xDistance, yDistance + 45);
                 }
 
-                if (field.getFoggy()) {
+                if (field.getFoggy(currentPlayer)) {
                     var fogImage = getImageForAsset("fog_RANDOM8.png");
                     context.drawImage(fogImage, xDistance - 15, yDistance - 15, FOG_SIZE, FOG_SIZE);
                 }
@@ -331,18 +368,16 @@
 
     var bridge = {};
     bridge.initialize = initialize;
-    bridge.setCurrentPlayer = setCurrentPlayer;
     bridge.getImageForAsset = getImageForAsset;
     bridge.render = render;
     bridge.setMode = setMode;
 
-    bridge.MODE_MOVE = MODE_MOVE;
-    bridge.MODE_WATER = MODE_WATER;
-    bridge.MODE_CHARACTER = MODE_CHARACTER;
-    bridge.MODE_ATTACK = MODE_ATTACK;
+    Ui.MODE_MOVE = MODE_MOVE;
+    Ui.MODE_WATER = MODE_WATER;
+    Ui.MODE_CHARACTER = MODE_CHARACTER;
+    Ui.MODE_ATTACK = MODE_ATTACK;
 
-    bridge.MODE_DATA_CHARACTER_TYPE = MODE_DATA_CHARACTER_TYPE;
-    bridge.MODE_DATA_PLAYER = MODE_DATA_PLAYER;
+    Ui.MODE_DATA_CHARACTER_TYPE = MODE_DATA_CHARACTER_TYPE;
 
-    window.Ui = bridge;
-})();
+    return bridge;
+};

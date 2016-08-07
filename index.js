@@ -1,15 +1,18 @@
-(function() {
+var Index = function(container, currentPlayer) {
     var isWaterMode = false;
     var isCharacterMode = false;
     var isAttackMode = false;
 
+    var uiTemplate = $("#ui-template");
     var characterTemplate = $("#character-template");
 
-    var controlsContainer = $(".container-controls");
-    var charactersContainer = $(".container-characters");
-    var fieldsContainer = $(".container-fields");
-    var playerSelect = $(".select-player");
-    var attackButton = $(".attack-button");
+    var controlsContainer;
+    var charactersContainer;
+    var fieldsContainer;
+    var playerSelect;
+    var attackButton;
+
+    var ui;
 
     function addFieldControl(container, type, name) {
         var characterContainer = $(characterTemplate.html());
@@ -33,11 +36,11 @@
                 mode = Ui.MODE_MOVE;
             }
 
-            Ui.setMode(mode);
+            ui.setMode(mode);
         });
 
         var asset = Field.ASSETS[type];
-        var img = Ui.getImageForAsset(asset);
+        var img = ui.getImageForAsset(asset);
 
         var imageElement = $(img);
         imageElement.addClass("controls-image");
@@ -76,17 +79,16 @@
                 mode = Ui.MODE_CHARACTER;
 
                 data[Ui.MODE_DATA_CHARACTER_TYPE] = type;
-                data[Ui.MODE_DATA_PLAYER] = parseInt(playerSelect.val());
             } else {
                 mode = Ui.MODE_MOVE;
             }
 
-            Ui.setMode(mode, data);
+            ui.setMode(mode, data);
         });
 
         var player = playerSelect.val();
         var asset = Character.ASSETS[type];
-        var img = Ui.getImageForAsset(asset, {
+        var img = ui.getImageForAsset(asset, {
             player: player
         });
 
@@ -98,53 +100,56 @@
         container.append(characterContainer);
     }
 
-    var uiPromise = Ui.initialize();
+    function initialize() {
+        var uiElement = $(uiTemplate.html());
 
-    var currentPlayer;
-    var urlHash = window.location.hash.substring(1);
-    if (urlHash) {
-        currentPlayer = parseInt(urlHash);
-    } else {
-        // TODO: ask which player
-        console.warn("choose player by appending a hash to the url and reloading");
+        controlsContainer = uiElement.find(".container-controls");
+        charactersContainer = uiElement.find(".container-characters");
+        fieldsContainer = uiElement.find(".container-fields");
+        playerSelect = uiElement.find(".select-player");
+        attackButton = uiElement.find(".attack-button");
+
+        var canvas = uiElement.find(".canvas");
+
+        container.append(uiElement);
+
+        ui = new Ui();
+        var uiPromise = ui.initialize(canvas, currentPlayer);
+        uiPromise.done(function() {
+            ui.render();
+
+            ui.setMode(Ui.MODE_MOVE);
+
+            addPlayerControl(playerSelect, currentPlayer);
+
+            addCharacterControl(charactersContainer, Character.TYPE_ARCHER, "Bogenschütze");
+            addCharacterControl(charactersContainer, Character.TYPE_KNIGHT, "Ritter");
+            addCharacterControl(charactersContainer, Character.TYPE_PAWN, "Bauer");
+
+            addFieldControl(fieldsContainer, Field.TYPE_WATER, "Wasser");
+
+            attackButton.click(function() {
+                isAttackMode = !isAttackMode;
+                isCharacterMode = false;
+                isWaterMode = false;
+
+                controlsContainer.find(".controls-button").removeClass("controls-button-active");
+                attackButton.toggleClass("controls-button-active", isAttackMode);
+
+                var mode;
+                if (isAttackMode) {
+                    mode = Ui.MODE_ATTACK;
+                } else {
+                    mode = Ui.MODE_MOVE;
+                }
+                ui.setMode(mode);
+            });
+
+            uiElement.find(".loading").addClass("hidden");
+            canvas.removeClass("hidden");
+            uiElement.find(".container-controls").removeClass("hidden");
+        });
     }
 
-    uiPromise.done(function() {
-        Ui.setCurrentPlayer(currentPlayer);
-
-        Game.initialize(15, currentPlayer);
-
-        Ui.render();
-
-        Ui.setMode(Ui.MODE_MOVE);
-
-        addPlayerControl(playerSelect, currentPlayer);
-
-        addCharacterControl(charactersContainer, Character.TYPE_ARCHER, "Bogenschütze");
-        addCharacterControl(charactersContainer, Character.TYPE_KNIGHT, "Ritter");
-        addCharacterControl(charactersContainer, Character.TYPE_PAWN, "Bauer");
-
-        addFieldControl(fieldsContainer, Field.TYPE_WATER, "Wasser");
-
-        attackButton.click(function() {
-            isAttackMode = !isAttackMode;
-            isCharacterMode = false;
-            isWaterMode = false;
-
-            controlsContainer.find(".controls-button").removeClass("controls-button-active");
-            attackButton.toggleClass("controls-button-active", isAttackMode);
-
-            var mode;
-            if (isAttackMode) {
-                mode = Ui.MODE_ATTACK;
-            } else {
-                mode = Ui.MODE_MOVE;
-            }
-            Ui.setMode(mode);
-        });
-
-        $(".loading").addClass("hidden");
-        $("#canvas").removeClass("hidden");
-        $(".container-controls").removeClass("hidden");
-    });
-})();
+    initialize();
+};
