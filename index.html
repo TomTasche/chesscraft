@@ -6,7 +6,7 @@
         display: none !important;
     }
 
-    .game {
+    .ui {
         display: inline-block;
     }
 
@@ -27,15 +27,19 @@
     }
 </style>
 
-<div class="games"></div>
+<div class="uis"></div>
 
 <script type="text/html" id="ui-template">
-    <div class="game">
+    <div class="ui">
         <div class="loading">Wird geladen...</div>
         <canvas class="canvas hidden"></canvas>
 
         <div class="container-controls hidden">
-            <button class="controls-button attack-button">Angriff!</button>
+            <span class="status"></span>
+
+            <hr>
+
+            <div class="container-modes"></div>
 
             <hr>
 
@@ -49,7 +53,7 @@
     </div>
 </script>
 
-<script type="text/html" id="character-template">
+<script type="text/html" id="control-template">
     <div>
         <button class="controls-button"></button>
     </div>
@@ -63,14 +67,3 @@
 <script src="master.js"></script>
 <script src="ui.js"></script>
 <script src="index.js"></script>
-
-<script>
-    Game.initialize(15);
-
-    var container = $(".games");
-
-    var index1 = new Index(container, 1);
-    var index2 = new Index(container, 2);
-
-    Master.nextTurn();
-</script>

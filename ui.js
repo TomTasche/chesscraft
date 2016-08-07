@@ -1,4 +1,4 @@
-var Ui = function() {
+var Ui = function(currentPlayer) {
     var FIELD_SIZE = 50;
     var SEPARATOR_WIDTH = 0.5;
     var SELECTOR_WIDTH = 3;
@@ -12,29 +12,27 @@ var Ui = function() {
 
     var MODE_DATA_CHARACTER_TYPE = "characterType";
 
-    var canvas;
+    var statusElement;
+    var canvasElement;
     var images;
+
+    var controlsContainer;
 
     var selectedCharacter;
 
-    var currentPlayer;
     var currentMode;
     var currentModeData;
 
     var turnFuture;
 
-    function initialize(canvasParameter, currentPlayerParameter) {
-        currentPlayer = currentPlayerParameter;
-
+    function initialize() {
         Master.addOnYourTurnListener(currentPlayer, onYourTurn);
 
         var future = $.Deferred();
 
-        canvas = canvasParameter;
         images = {};
 
         var assets = [];
-
         assets.push("archer_1.png");
         assets.push("archer_2.png");
         assets.push("knight_1.png");
@@ -79,11 +77,149 @@ var Ui = function() {
             imagePromises.push(promise);
         }
 
+        var uiTemplate = $("#ui-template");
+
+        var uiElement = $(uiTemplate.html());
+        controlsContainer = uiElement.find(".container-controls");
+        canvasElement = uiElement.find(".canvas");
+        statusElement = uiElement.find(".status");
+
+        $(".uis").append(uiElement);
+
         $.when.apply($, imagePromises).done(function() {
+            render();
+
+            setMode(MODE_MOVE);
+
+            var playerSelect = uiElement.find(".select-player");
+            addPlayerControl(playerSelect, currentPlayer);
+
+            var controlTemplate = $("#control-template");
+
+            var charactersContainer = uiElement.find(".container-characters");
+            addCharacterControl(charactersContainer, controlTemplate, Character.TYPE_ARCHER, "Bogenschütze");
+            addCharacterControl(charactersContainer, controlTemplate, Character.TYPE_KNIGHT, "Ritter");
+            addCharacterControl(charactersContainer, controlTemplate, Character.TYPE_PAWN, "Bauer");
+
+            var fieldsContainer = uiElement.find(".container-fields");
+            addFieldControl(fieldsContainer, controlTemplate, Field.TYPE_WATER, "Wasser");
+
+            var modesContainer = uiElement.find(".container-modes");
+            addAttackControl(modesContainer, controlTemplate, "Angriff!");
+
+            uiElement.find(".loading").addClass("hidden");
+            canvasElement.removeClass("hidden");
+            uiElement.find(".container-controls").removeClass("hidden");
+
             future.resolve();
         });
 
         return future.promise();
+    }
+
+    function addAttackControl(container, template, name) {
+        var element = $(template.html());
+
+        var button = element.find(".controls-button");
+        button.text(name);
+
+        button.click(function() {
+            var isAttackMode = currentMode !== MODE_ATTACK;
+
+            controlsContainer.find(".controls-button").removeClass("controls-button-active");
+            button.toggleClass("controls-button-active", isAttackMode);
+
+            var mode;
+            if (isAttackMode) {
+                mode = MODE_ATTACK;
+            } else {
+                mode = MODE_MOVE;
+            }
+            setMode(mode);
+        });
+
+        container.prepend(element);
+    }
+
+    function addFieldControl(container, template, type, name) {
+        var element = $(template.html());
+
+        var button = element.find(".controls-button");
+        button.text(name);
+
+        button.click(function() {
+            var isWaterMode = currentMode !== MODE_WATER;
+
+            controlsContainer.find(".controls-button").removeClass("controls-button-active");
+            button.toggleClass("controls-button-active", isWaterMode);
+
+            var mode;
+            if (isWaterMode) {
+                mode = MODE_WATER;
+            } else {
+                mode = MODE_MOVE;
+            }
+
+            setMode(mode);
+        });
+
+        var asset = Field.ASSETS[type];
+        var img = getImageForAsset(asset, {
+            direction: ""
+        });
+
+        var imageElement = $(img);
+        imageElement.addClass("controls-image");
+
+        element.prepend(imageElement);
+
+        container.append(element);
+    }
+
+    function addPlayerControl(select, playerNumber) {
+        var option = $("<option>");
+        option.attr("value", playerNumber);
+        option.text("Spieler " + playerNumber);
+
+        select.append(option);
+    }
+
+    function addCharacterControl(container, template, type, name) {
+        var element = $(template.html());
+
+        var button = element.find(".controls-button");
+        button.text(name);
+
+        button.click(function() {
+            var isCharacterMode = currentMode !== MODE_CHARACTER;
+
+            controlsContainer.find(".controls-button").removeClass("controls-button-active");
+            button.toggleClass("controls-button-active", isCharacterMode);
+
+            var mode;
+            var data = {};
+            if (isCharacterMode) {
+                mode = MODE_CHARACTER;
+
+                data[MODE_DATA_CHARACTER_TYPE] = type;
+            } else {
+                mode = MODE_MOVE;
+            }
+
+            setMode(mode, data);
+        });
+
+        var asset = Character.ASSETS[type];
+        var img = getImageForAsset(asset, {
+            player: currentPlayer
+        });
+
+        var imageElement = $(img);
+        imageElement.addClass("controls-image");
+
+        element.prepend(imageElement);
+
+        container.append(element);
     }
 
     function awaitNextTurn() {
@@ -96,6 +232,8 @@ var Ui = function() {
     function onYourTurn(moveCallback, attackCallback, spawnCharacterCallback, spawnFieldCallback) {
         render();
 
+        statusElement.text("Du bist dran!");
+
         var promise = awaitNextTurn();
         promise.done(function(turn) {
             if (turn.mode === MODE_MOVE) {
@@ -107,6 +245,8 @@ var Ui = function() {
             } else if (turn.mode === MODE_CHARACTER) {
                 spawnCharacterCallback(turn.player, turn.characterType, turn.x, turn.y);
             }
+
+            statusElement.text("Guter Zug.");
         });
     }
 
@@ -150,8 +290,8 @@ var Ui = function() {
             clickX = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
             clickY = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
         }
-        clickX -= canvas[0].offsetLeft;
-        clickY -= canvas[0].offsetTop;
+        clickX -= canvasElement[0].offsetLeft;
+        clickY -= canvasElement[0].offsetTop;
 
         var x = Math.floor(clickY / (FIELD_SIZE + SEPARATOR_WIDTH));
         var y = Math.floor(clickX / (FIELD_SIZE + SEPARATOR_WIDTH));
@@ -257,7 +397,7 @@ var Ui = function() {
     }
 
     function render() {
-        var domCanvas = canvas[0];
+        var domCanvas = canvasElement[0];
         var context = domCanvas.getContext("2d");
 
         domCanvas.addEventListener("click", onCanvasClicked, false);
@@ -363,6 +503,8 @@ var Ui = function() {
         currentMode = mode;
         currentModeData = data;
     }
+
+    initialize();
 
     var bridge = {};
     bridge.initialize = initialize;
