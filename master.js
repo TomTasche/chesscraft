@@ -1,5 +1,6 @@
 (function() {
     var yourTurnListeners = {};
+    var changeListeners = [];
 
     var playersTurn = 0;
 
@@ -18,6 +19,8 @@
         }
 
         nextTurn();
+
+        callChangeListeners();
     }
 
     function toState() {
@@ -72,6 +75,15 @@
         finishTurn();
     }
 
+    function callChangeListeners() {
+        var listeners = changeListeners;
+        for (var i = 0; i < listeners.length; i++) {
+            var listener = listeners[i];
+
+            listener();
+        }
+    }
+
     function callYourTurnListeners(player) {
         var listeners = yourTurnListeners[player];
         if (!listeners) {
@@ -96,9 +108,14 @@
         listeners.push(listener);
     }
 
+    function addOnChangeListener(listener) {
+        changeListeners.push(listener);
+    }
+
     var bridge = {};
     bridge.initialize = initialize;
     bridge.addOnYourTurnListener = addOnYourTurnListener;
+    bridge.addOnChangeListener = addOnChangeListener;
     bridge.nextTurn = nextTurn;
     bridge.toState = toState;
     bridge.fromState = fromState;

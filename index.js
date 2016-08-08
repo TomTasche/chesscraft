@@ -16,7 +16,9 @@
 
     Master.initialize();
 
-    var ui = new Ui(player);
+    var playerNumber = parseInt(player);
+    var ui = new Ui(playerNumber);
+
     var uiPromise = ui.initialize();
     uiPromise.done(function() {
         FirebaseBridge.fetchGame();

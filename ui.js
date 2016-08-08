@@ -27,6 +27,7 @@ var Ui = function(currentPlayer) {
 
     function initialize() {
         Master.addOnYourTurnListener(currentPlayer, onYourTurn);
+        Master.addOnChangeListener(onChange);
 
         var future = $.Deferred();
 
@@ -230,8 +231,6 @@ var Ui = function(currentPlayer) {
     }
 
     function onYourTurn(moveCallback, attackCallback, spawnCharacterCallback, spawnFieldCallback) {
-        render();
-
         statusElement.text("Du bist dran!");
 
         var promise = awaitNextTurn();
@@ -248,6 +247,10 @@ var Ui = function(currentPlayer) {
 
             statusElement.text("Guter Zug.");
         });
+    }
+
+    function onChange() {
+        render();
     }
 
     function loadAsset(asset) {
@@ -356,8 +359,6 @@ var Ui = function(currentPlayer) {
         if (turnFuture && turned) {
             turnFuture.resolve(turn);
             turnFuture = null;
-
-            render();
         }
     }
 
@@ -457,7 +458,7 @@ var Ui = function(currentPlayer) {
                     if (character === selectedCharacter) {
                         color = "blue";
                     } else {
-                        if (character.getPlayer() === 1) {
+                        if (character.getPlayer() === currentPlayer) {
                             color = "green";
                         } else {
                             color = "red";
@@ -506,9 +507,6 @@ var Ui = function(currentPlayer) {
 
     var bridge = {};
     bridge.initialize = initialize;
-    bridge.getImageForAsset = getImageForAsset;
-    bridge.render = render;
-    bridge.setMode = setMode;
 
     Ui.MODE_MOVE = MODE_MOVE;
     Ui.MODE_WATER = MODE_WATER;
