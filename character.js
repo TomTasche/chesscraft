@@ -5,7 +5,7 @@
         var x;
         var y;
 
-        var moved;
+        var moved = false;
 
         var strength;
         if (Character.TYPE_PAWN === type) {
@@ -29,6 +29,25 @@
             range = 5;
         } else {
             range = 1;
+        }
+
+        function fromState(state) {
+            health = state.health;
+            moved = state.moved;
+            x = state.x;
+            y = state.y;
+        }
+
+        function toState() {
+            var state = {};
+            state.player = player;
+            state.type = type;
+            state.health = health;
+            state.moved = moved;
+            state.x = x;
+            state.y = y;
+
+            return state;
         }
 
         function getX() {
@@ -123,7 +142,6 @@
         }
 
         var bridge = {};
-
         bridge.getX = getX;
         bridge.setX = setX;
         bridge.getY = getY;
@@ -137,6 +155,8 @@
         bridge.getRange = getRange;
         bridge.isMovePossible = isMovePossible;
         bridge.toString = toString;
+        bridge.toState = toState;
+        bridge.fromState = fromState;
 
         return bridge;
     };

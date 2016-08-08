@@ -1,7 +1,8 @@
 (function() {
-    var grid = [];
+    var grid;
 
     function initialize(gridSize) {
+        grid = [];
         for (var i = 0; i < gridSize; i++) {
             var row = [];
             for (var j = 0; j < gridSize; j++) {
@@ -14,6 +15,44 @@
         }
 
         calculateFogs();
+    }
+
+    function fromState(state) {
+        var gridState = state.grid;
+        var gridSize = getGridSize();
+        for (var x = 0; x < gridSize; x++) {
+            for (var y = 0; y < gridSize; y++) {
+                var field = grid[x][y];
+                var fieldState = gridState[x][y];
+
+                field.fromState(fieldState);
+            }
+        }
+
+        calculateFogs();
+    }
+
+    function toState() {
+        var state = {};
+
+        var gridState = [];
+        var gridSize = getGridSize();
+        for (var x = 0; x < gridSize; x++) {
+            var row = [];
+
+            for (var y = 0; y < gridSize; y++) {
+                var field = grid[x][y];
+                var fieldState = field.toState();
+
+                row.push(fieldState);
+            }
+
+            gridState.push(row);
+        }
+
+        state.grid = gridState;
+
+        return state;
     }
 
     function getGridSize() {
@@ -324,6 +363,8 @@
     bridge.isHorizontalMove = isHorizontalMove;
     bridge.isDiagonalMove = isDiagonalMove;
     bridge.toString = toString;
+    bridge.toState = toState;
+    bridge.fromState = fromState;
 
     window.Game = bridge;
 })();

@@ -504,8 +504,6 @@ var Ui = function(currentPlayer) {
         currentModeData = data;
     }
 
-    initialize();
-
     var bridge = {};
     bridge.initialize = initialize;
     bridge.getImageForAsset = getImageForAsset;

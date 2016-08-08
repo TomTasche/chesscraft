@@ -38,6 +38,30 @@
             }
         }
 
+        function toState() {
+            var state = {};
+            state.type = type;
+
+            if (occupant) {
+                var occupantState = occupant.toState();
+                state.occupant = occupantState;
+            }
+
+            return state;
+        }
+
+        function fromState(state) {
+            type = state.type;
+
+            var occupantState = state.occupant;
+            if (occupantState) {
+                var character = new Character(occupantState.player, occupantState.type);
+                character.fromState(occupantState);
+
+                occupant = character;
+            }
+        }
+
         var bridge = {};
         bridge.getOccupant = getOccupant;
         bridge.setOccupant = setOccupant;
@@ -46,6 +70,8 @@
         bridge.getFoggy = getFoggy;
         bridge.setFoggy = setFoggy;
         bridge.toString = toString;
+        bridge.toState = toState;
+        bridge.fromState = fromState;
 
         return bridge;
     };

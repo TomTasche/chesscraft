@@ -3,6 +3,40 @@
 
     var playersTurn = 0;
 
+    function initialize() {
+        Game.initialize(15);
+    }
+
+    function fromState(state) {
+        if (state) {
+            playersTurn = state.playersTurn;
+
+            var gridSize = state.size;
+            Game.initialize(gridSize);
+
+            Game.fromState(state.game);
+        }
+
+        nextTurn();
+    }
+
+    function toState() {
+        var state = {};
+        state.size = Game.getGridSize();
+        state.playersTurn = playersTurn;
+
+        var gameState = Game.toState();
+        state.game = gameState;
+
+        return state;
+    }
+
+    function finishTurn() {
+        FirebaseBridge.saveGame();
+
+        nextTurn();
+    }
+
     function nextTurn() {
         playersTurn = playersTurn % 2;
         playersTurn++;
@@ -13,19 +47,19 @@
     function moveCallback(character, newX, newY) {
         Game.moveCharacter(character, newX, newY);
 
-        nextTurn();
+        finishTurn();
     }
 
     function attackCallback(character, enemyX, enemyY) {
         Game.attack(character, enemyX, enemyY);
 
-        nextTurn();
+        finishTurn();
     }
 
     function spawnCharacterCallback(player, type, x, y) {
         Game.addCharacter(player, type, x, y);
 
-        nextTurn();
+        finishTurn();
     }
 
     function spawnFieldCallback(player, type, x, y) {
@@ -35,11 +69,15 @@
             console.error("not implemented");
         }
 
-        nextTurn();
+        finishTurn();
     }
 
     function callYourTurnListeners(player) {
         var listeners = yourTurnListeners[player];
+        if (!listeners) {
+            return;
+        }
+
         for (var i = 0; i < listeners.length; i++) {
             var listener = listeners[i];
 
@@ -59,8 +97,11 @@
     }
 
     var bridge = {};
+    bridge.initialize = initialize;
     bridge.addOnYourTurnListener = addOnYourTurnListener;
     bridge.nextTurn = nextTurn;
+    bridge.toState = toState;
+    bridge.fromState = fromState;
 
     window.Master = bridge;
 })();
